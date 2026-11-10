@@ -21,22 +21,26 @@
 }
 
 /* =====================================================
-   2. CONFIGURAÇÕES GERAIS
+   2. CONFIGURAÇÕES GERAIS — FUNDO DA PÁGINA
    ===================================================== */
 
 * {
     box-sizing: border-box;
 }
 
+html {
+    background: #2B1550;
+}
+
 body {
     margin: 0;
     min-height: 100vh;
     background:
-        radial-gradient(circle at 12% 8%, #FFD54A55, transparent 45%),
-        radial-gradient(circle at 88% 12%, #8D55D955, transparent 48%),
-        radial-gradient(circle at 78% 88%, #FF8A4C55, transparent 45%),
-        radial-gradient(circle at 20% 92%, #00B8D944, transparent 45%),
-        linear-gradient(135deg, #FFF7E3, #FFE4C4);
+        radial-gradient(circle at 12% 8%, #FFC80066, transparent 42%),
+        radial-gradient(circle at 88% 10%, #8D55D988, transparent 46%),
+        radial-gradient(circle at 80% 90%, #FF5E0066, transparent 44%),
+        radial-gradient(circle at 15% 92%, #00B8D966, transparent 44%),
+        linear-gradient(140deg, #2B1550 0%, #4A1F86 45%, #7A2E7A 100%);
     background-attachment: fixed;
     font-family: 'DM Sans', sans-serif;
     color: var(--ink);
@@ -51,7 +55,7 @@ body {
     position: fixed;
     border-radius: 50%;
     pointer-events: none;
-    filter: blur(30px);
+    filter: blur(40px);
     opacity: .55;
 }
 
@@ -68,7 +72,7 @@ body {
     height: 290px;
     left: -130px;
     bottom: -140px;
-    background: #FFC08A;
+    background: #FFB56B;
 }
 
 /* =====================================================
@@ -205,6 +209,13 @@ header {
 .intro {
     flex: 1;
     max-width: 550px;
+    padding: 30px;
+    border: 1px solid var(--glass-border);
+    border-radius: 22px;
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    box-shadow: var(--glass-shadow);
 }
 
 .intro label,
@@ -230,7 +241,7 @@ h1 i {
 .intro p {
     font-size: 15px;
     line-height: 1.8;
-    color: #6B4E8C;
+    color: #5C4080;
     max-width: 470px;
 }
 
@@ -287,11 +298,11 @@ h1 i {
     position: relative;
     width: 43%;
     height: 435px;
-    border: 8px solid rgba(255, 255, 255, 0.6);
+    border: 8px solid rgba(255, 255, 255, 0.35);
     border-radius: 190px 190px 22px 22px;
     overflow: hidden;
     background: linear-gradient(#B88CFF, #FFC070 65%, #FF7B4D);
-    box-shadow: 0 24px 70px rgba(61, 26, 120, 0.22);
+    box-shadow: 0 24px 70px rgba(20, 8, 40, 0.45);
 }
 
 .hero img {
@@ -388,7 +399,7 @@ footer {
     -webkit-backdrop-filter: var(--glass-blur);
     backdrop-filter: var(--glass-blur);
     box-shadow: var(--glass-shadow);
-    color: #9B7BC4;
+    color: #5C4080;
     font-size: 9px;
 }
 
@@ -411,6 +422,13 @@ footer b:first-child {
     justify-content: space-between;
     align-items: end;
     margin-bottom: 20px;
+    padding: 18px 22px;
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    box-shadow: var(--glass-shadow);
 }
 
 .game-head h2,
@@ -525,7 +543,7 @@ h3 {
 .visual {
     min-height: 160px;
     border-radius: 14px;
-    background: rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.32);
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.65);
@@ -781,7 +799,15 @@ aside blockquote {
     flex-direction: column;
     text-align: center;
     padding: 45px 10px;
-    border-radius: 18px;
+    margin: auto;
+    max-width: 620px;
+    width: 100%;
+    border: 1px solid var(--glass-border);
+    border-radius: 22px;
+    background: var(--glass-bg-strong);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    box-shadow: var(--glass-shadow);
 }
 
 .finish-icon {
@@ -837,6 +863,10 @@ aside blockquote {
         padding: 18px;
     }
 
+    .intro {
+        padding: 24px;
+    }
+
     .visual-card {
         width: 120px;
     }
@@ -882,6 +912,11 @@ aside blockquote {
         gap: 25px;
     }
 
+    .intro {
+        padding: 20px;
+        border-radius: 18px;
+    }
+
     .hero {
         width: 100%;
         max-width: 420px;
@@ -903,6 +938,7 @@ aside blockquote {
         align-items: flex-start;
         flex-direction: column;
         gap: 14px;
+        padding: 14px;
     }
 
     .progress {
@@ -995,7 +1031,10 @@ aside blockquote {
     .visual,
     .visual-card,
     .answer,
-    .secondary {
+    .secondary,
+    .intro,
+    .game-head,
+    .finish {
         background: rgba(255, 253, 247, 0.88);
     }
 }
@@ -1386,7 +1425,7 @@ aside blockquote {
     --cor-secundaria: #FF5E00;
     --cor-destaque: #00B8D9;
     --cor-roxa: #8D55D9;
-    --cor-fundo: #FFF1D6;
+    --cor-fundo: #2B1550;
     --cor-texto: #2A1245;
 }
 
