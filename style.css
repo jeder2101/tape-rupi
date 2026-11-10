@@ -12,6 +12,12 @@
     --paper: #FFFCF5;
     --ink: #2A1245;
     --muted: #7A5CA0;
+
+    --glass-bg: rgba(255, 255, 255, 0.45);
+    --glass-bg-strong: rgba(255, 255, 255, 0.62);
+    --glass-border: rgba(255, 255, 255, 0.75);
+    --glass-blur: blur(18px);
+    --glass-shadow: 0 18px 45px rgba(61, 26, 120, 0.12);
 }
 
 /* =====================================================
@@ -25,7 +31,13 @@
 body {
     margin: 0;
     min-height: 100vh;
-    background: linear-gradient(135deg, #FFF7E3, #FFE4C4);
+    background:
+        radial-gradient(circle at 12% 8%, #FFD54A55, transparent 45%),
+        radial-gradient(circle at 88% 12%, #8D55D955, transparent 48%),
+        radial-gradient(circle at 78% 88%, #FF8A4C55, transparent 45%),
+        radial-gradient(circle at 20% 92%, #00B8D944, transparent 45%),
+        linear-gradient(135deg, #FFF7E3, #FFE4C4);
+    background-attachment: fixed;
     font-family: 'DM Sans', sans-serif;
     color: var(--ink);
     overflow-x: hidden;
@@ -39,23 +51,23 @@ body {
     position: fixed;
     border-radius: 50%;
     pointer-events: none;
-    filter: blur(3px);
-    opacity: .5;
+    filter: blur(30px);
+    opacity: .55;
 }
 
 .g1 {
-    width: 300px;
-    height: 300px;
+    width: 340px;
+    height: 340px;
     right: 5%;
     top: -160px;
     background: #C6A5FF;
 }
 
 .g2 {
-    width: 250px;
-    height: 250px;
-    left: -120px;
-    bottom: -130px;
+    width: 290px;
+    height: 290px;
+    left: -130px;
+    bottom: -140px;
     background: #FFC08A;
 }
 
@@ -75,15 +87,22 @@ body {
 }
 
 /* =====================================================
-   5. CABEÇALHO
+   5. CABEÇALHO — VIDRO
    ===================================================== */
 
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 5px 0 22px;
-    border-bottom: 1px solid #E8D6FF;
+    gap: 14px;
+    padding: 14px 20px;
+    margin-bottom: 18px;
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    box-shadow: var(--glass-shadow);
 }
 
 .brand {
@@ -107,12 +126,13 @@ header {
     color: var(--gold);
     font: 700 19px 'Playfair Display';
     letter-spacing: 0;
+    box-shadow: 0 6px 16px rgba(61, 26, 120, 0.28);
 }
 
 .brand small {
     display: block;
     font-size: 8px;
-    color: #9B7BC4;
+    color: #8A6BAF;
     letter-spacing: .15em;
     margin-top: 4px;
 }
@@ -124,8 +144,10 @@ header {
 }
 
 #sound {
-    border: 1px solid #E8D6FF;
-    background: #fff9;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg-strong);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     border-radius: 50%;
     width: 38px;
     height: 38px;
@@ -137,7 +159,8 @@ header {
     font-size: 9px;
     font-weight: 800;
     letter-spacing: .12em;
-    background: #FFE3B8;
+    background: rgba(255, 200, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.7);
     color: var(--forest);
     padding: 10px 13px;
     border-radius: 25px;
@@ -227,14 +250,14 @@ h1 i {
 
 .primary {
     border: 0;
-    border-radius: 9px;
+    border-radius: 12px;
     background: var(--forest);
     color: #FFF4D6;
     padding: 17px 23px;
     font-size: 10px;
     font-weight: 800;
     letter-spacing: .12em;
-    box-shadow: 0 10px 22px #3D1A7833;
+    box-shadow: 0 10px 22px rgba(61, 26, 120, 0.25);
     transition: .2s;
 }
 
@@ -264,11 +287,11 @@ h1 i {
     position: relative;
     width: 43%;
     height: 435px;
-    border: 8px solid #fff9;
-    border-radius: 190px 190px 18px 18px;
+    border: 8px solid rgba(255, 255, 255, 0.6);
+    border-radius: 190px 190px 22px 22px;
     overflow: hidden;
     background: linear-gradient(#B88CFF, #FFC070 65%, #FF7B4D);
-    box-shadow: 0 24px 70px #3D1A7820;
+    box-shadow: 0 24px 70px rgba(61, 26, 120, 0.22);
 }
 
 .hero img {
@@ -350,16 +373,22 @@ h1 i {
 }
 
 /* =====================================================
-   10. RODAPÉ
+   10. RODAPÉ — VIDRO
    ===================================================== */
 
 footer {
     display: flex;
     justify-content: space-between;
     gap: 12px;
-    border-top: 1px solid #E8D6FF;
-    padding: 16px 0 2px;
-    color: #A084C0;
+    margin-top: 14px;
+    padding: 14px 20px;
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    box-shadow: var(--glass-shadow);
+    color: #9B7BC4;
     font-size: 9px;
 }
 
@@ -421,7 +450,8 @@ footer b:first-child {
 .progress i {
     display: block;
     height: 6px;
-    background: #F1E2FF;
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.6);
     border-radius: 10px;
     overflow: hidden;
 }
@@ -435,7 +465,7 @@ footer b:first-child {
 }
 
 /* =====================================================
-   13. ÁREA PRINCIPAL E PAINÉIS
+   13. ÁREA PRINCIPAL E PAINÉIS — VIDRO
    ===================================================== */
 
 .layout {
@@ -446,11 +476,13 @@ footer b:first-child {
 
 .panel,
 .side {
-    background: var(--paper);
-    border: 1px solid #F0E4D0;
-    border-radius: 15px;
+    background: var(--glass-bg-strong);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
     padding: 22px;
-    box-shadow: 0 12px 40px #3D1A7810;
+    box-shadow: var(--glass-shadow);
 }
 
 /* =====================================================
@@ -467,7 +499,8 @@ footer b:first-child {
 }
 
 .qmeta span:last-child {
-    background: #FFEDC9;
+    background: rgba(255, 200, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.6);
     color: #C46A00;
     padding: 8px 10px;
     border-radius: 20px;
@@ -486,13 +519,16 @@ h3 {
 }
 
 /* =====================================================
-   15. ÁREA VISUAL DAS PERGUNTAS
+   15. ÁREA VISUAL DAS PERGUNTAS — VIDRO
    ===================================================== */
 
 .visual {
     min-height: 160px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #F3E6FF, #FFF1D6);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.35);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.65);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -505,12 +541,15 @@ h3 {
 .visual-card {
     width: 140px;
     height: 130px;
-    border-radius: 12px;
-    background: #FFFCF5;
-    border: 1px solid #F0E0C8;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.72);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.85);
     display: grid;
     place-items: center;
     padding: 10px;
+    box-shadow: 0 8px 20px rgba(61, 26, 120, 0.08);
 }
 
 .visual-emoji {
@@ -542,7 +581,7 @@ h3 {
 }
 
 /* =====================================================
-   16. ALTERNATIVAS DE RESPOSTA
+   16. ALTERNATIVAS DE RESPOSTA — VIDRO
    ===================================================== */
 
 .answers {
@@ -554,9 +593,11 @@ h3 {
 
 .answer {
     min-height: 70px;
-    border: 1px solid #F0E0C8;
-    background: white;
-    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.55);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-radius: 14px;
     padding: 8px;
     display: flex;
     align-items: center;
@@ -564,12 +605,14 @@ h3 {
     gap: 5px;
     flex-direction: column;
     color: var(--forest);
+    box-shadow: 0 6px 16px rgba(61, 26, 120, 0.07);
     transition: .18s;
 }
 
 .answer:hover:not(:disabled) {
     border-color: #FF5E00;
     transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.75);
 }
 
 .answer:disabled {
@@ -578,12 +621,12 @@ h3 {
 
 .answer.correct {
     border: 2px solid #00B87A;
-    background: #E7FFF4;
+    background: rgba(0, 255, 170, 0.16);
 }
 
 .answer.wrong {
     border: 2px solid #FF5E00;
-    background: #FFEDE4;
+    background: rgba(255, 94, 0, 0.14);
 }
 
 .answer-symbol {
@@ -614,16 +657,18 @@ h3 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid #F3E9DC;
+    border-top: 1px solid rgba(255, 255, 255, 0.6);
     padding-top: 13px;
 }
 
 .secondary {
-    border: 1px solid #F0DCC0;
-    background: #FFF4E3;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.58);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
     color: #8A4A00;
     padding: 10px 13px;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 9px;
     font-weight: 800;
 }
@@ -669,8 +714,9 @@ aside {
     height: 42px;
     display: grid;
     place-items: center;
-    border-radius: 12px;
-    background: #FFE9BC;
+    border-radius: 14px;
+    background: rgba(255, 200, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.7);
     color: #D07A00;
     font-size: 24px;
 }
@@ -726,7 +772,7 @@ aside blockquote {
 }
 
 /* =====================================================
-   19. TELA DE CONCLUSÃO
+   19. TELA DE CONCLUSÃO — VIDRO
    ===================================================== */
 
 .finish {
@@ -735,6 +781,7 @@ aside blockquote {
     flex-direction: column;
     text-align: center;
     padding: 45px 10px;
+    border-radius: 18px;
 }
 
 .finish-icon {
@@ -805,6 +852,11 @@ aside blockquote {
         padding: 14px 14px 10px;
     }
 
+    header {
+        padding: 12px 14px;
+        border-radius: 16px;
+    }
+
     .brand {
         font-size: 12px;
     }
@@ -835,7 +887,7 @@ aside blockquote {
         max-width: 420px;
         height: 280px;
         margin: auto;
-        border-radius: 125px 125px 15px 15px;
+        border-radius: 125px 125px 16px 16px;
     }
 
     .intro p {
@@ -911,6 +963,8 @@ aside blockquote {
 
     footer {
         font-size: 8px;
+        padding: 12px 14px;
+        border-radius: 14px;
     }
 
     footer span {
@@ -930,11 +984,25 @@ aside blockquote {
     }
 }
 
+/* Fallback: navegador sem backdrop-filter */
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+
+    header,
+    footer,
+    .panel,
+    .side,
+    .visual,
+    .visual-card,
+    .answer,
+    .secondary {
+        background: rgba(255, 253, 247, 0.88);
+    }
+}
+
 /* =====================================================
    23. TAPE-RUPI — PADRONIZAÇÃO DAS IMAGENS
    ===================================================== */
-
-/* Cartão principal da imagem */
 
 .visual-card {
     width: 100%;
@@ -954,8 +1022,6 @@ aside blockquote {
     overflow: hidden;
 }
 
-/* Imagem individual do vocabulário */
-
 .visual-image {
     display: block;
 
@@ -969,8 +1035,6 @@ aside blockquote {
     margin: auto;
 }
 
-/* Área geral onde aparece a imagem */
-
 #visual {
     width: 100%;
     min-width: 0;
@@ -983,8 +1047,6 @@ aside blockquote {
     overflow: hidden;
     box-sizing: border-box;
 }
-
-/* Área de contagem dos animais */
 
 .visual-count {
     width: 100%;
@@ -1006,8 +1068,6 @@ aside blockquote {
     overflow: hidden;
 }
 
-/* Imagens dos animais na contagem */
-
 .count-animal-image {
     display: block;
 
@@ -1020,8 +1080,6 @@ aside blockquote {
 
     flex: 0 1 85px;
 }
-
-/* Aviso quando uma imagem não existe */
 
 .image-missing {
     display: block;
@@ -1070,8 +1128,6 @@ aside blockquote {
    TAPE-RUPI — NÚMEROS: CÍRCULO E VISIBILIDADE
    ===================================================== */
 
-/* ALGARISMO DENTRO DO CÍRCULO */
-
 .number-visual {
     display: flex !important;
 
@@ -1089,7 +1145,9 @@ aside blockquote {
     border-radius: 50% !important;
     border: 5px solid #FF5E00 !important;
 
-    background: #FFFCF5 !important;
+    background: rgba(255, 255, 255, 0.75) !important;
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
     color: #3D1A78 !important;
 
     font-family: 'Playfair Display', serif !important;
@@ -1099,7 +1157,7 @@ aside blockquote {
     line-height: 1 !important;
     text-align: center !important;
 
-    box-shadow: 0 8px 25px #FF5E0033;
+    box-shadow: 0 8px 25px rgba(255, 94, 0, 0.22);
 
     visibility: visible !important;
     opacity: 1 !important;
@@ -1109,15 +1167,11 @@ aside blockquote {
     overflow: visible !important;
 }
 
-/* VISIBILIDADE DO CONTEÚDO INTERNO */
-
 .number-visual * {
     color: #3D1A78 !important;
     opacity: 1 !important;
     visibility: visible !important;
 }
-
-/* ALTERNATIVAS DAS PALAVRAS NHANDEWA */
 
 .number-answers {
     display: grid;
@@ -1131,18 +1185,18 @@ aside blockquote {
     font-size: 15px;
     font-weight: 800;
     letter-spacing: .04em;
-    border-radius: 12px;
-    background: #FFFCF5;
-    border: 2px solid #FFE0B8;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.6);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.85);
 }
 
 .number-answers .answer:hover:not(:disabled) {
-    background: #FFF0DB;
+    background: rgba(255, 255, 255, 0.85);
     border-color: #FF5E00;
     transform: translateY(-3px);
 }
-
-/* IMAGENS MÚLTIPLAS EM FORMATO CIRCULAR */
 
 .visual-count {
     display: flex;
@@ -1163,26 +1217,23 @@ aside blockquote {
     min-width: 85px !important;
 
     border-radius: 50% !important;
-    border: 3px solid #FFD79E !important;
+    border: 3px solid rgba(255, 255, 255, 0.9) !important;
 
-    background: #FFFCF5 !important;
+    background: rgba(255, 255, 255, 0.8) !important;
     padding: 8px !important;
 
     object-fit: contain !important;
     object-position: center !important;
 
     flex: 0 0 85px;
+    box-shadow: 0 6px 14px rgba(61, 26, 120, 0.1);
 }
-
-/* EFEITO AO PASSAR O MOUSE */
 
 .count-animal-image:hover {
     transform: scale(1.08);
     border-color: #FF5E00 !important;
     transition: .2s ease;
 }
-
-/* RESPONSIVIDADE — CELULARES */
 
 @media (max-width: 600px) {
 
@@ -1264,7 +1315,9 @@ aside blockquote {
     border: 5px solid #FF5E00 !important;
     border-radius: 50% !important;
 
-    background: #FFFCF5 !important;
+    background: rgba(255, 255, 255, 0.78) !important;
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
     color: #3D1A78 !important;
 
     font-family: 'Playfair Display', serif !important;
@@ -1302,7 +1355,7 @@ aside blockquote {
         min-height: 205px !important;
     }
 }
-/* AVISO DE ARQUIVO DE IMAGEM AUSENTE */
+/* AVISO DE ARQUIVO DE IMAGEM AUSENTE — VIDRO */
 
 .image-missing {
     display: flex;
@@ -1314,10 +1367,12 @@ aside blockquote {
     max-width: 100%;
 
     padding: 8px;
-    border: 2px dashed #FF9E5E;
-    border-radius: 10px;
+    border: 2px dashed rgba(255, 94, 0, 0.55);
+    border-radius: 12px;
 
-    background: #FFF3E6;
+    background: rgba(255, 244, 230, 0.7);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
     color: #C43A0A;
 
     font-size: 10px;
