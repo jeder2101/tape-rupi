@@ -126,31 +126,31 @@ const VOCABULARY = [
     {word:"MORÕTI", meaning:"cor", category:"CORES", audio:"moroti.mp3", file:"moroti.png"},
 
     // CORPO HUMANO
-    {word:"(TXE)AKÃ", meaning:"cabeça", category:"CORPO", audio:"aka.mp3", file:"aka.png"},
-    {word:"(TXE)'AWY", meaning:"cabelo", category:"CORPO", audio:"awy.mp3", file:"awy.png"},
-    {word:"(TXE)KUPÉ", meaning:"costas", category:"CORPO", audio:"kupe.mp3", file:"kupe.png"},
-    {word:"(TXE)POAPY", meaning:"pulso", category:"CORPO", audio:"poapy.mp3", file:"poapy.png"},
-    {word:"(TXE)NAMBI", meaning:"orelha", category:"CORPO", audio:"nambi.mp3", file:"nambi.png"},
-    {word:"(TXE)APYTSÃ-KWÁ", meaning:"ouvido", category:"CORPO", audio:"apytsangwa.mp3", file:"apytsangwa.png"},
-    {word:"(TXE)APYTÉ", meaning:"testa", category:"CORPO", audio:"apyte.mp3", file:"apyte.png"},
-    {word:"(TXE)RETSÁ", meaning:"olho", category:"CORPO", audio:"retsa.mp3", file:"retsa.png"},
-    {word:"(TXE)ROWÁ", meaning:"rosto", category:"CORPO", audio:"rowa.mp3", file:"rowa.png"},
-    {word:"(TXE)APYINGWÁ", meaning:"nariz", category:"CORPO", audio:"apyingwa.mp3", file:"apyingwa.png"},
-    {word:"(TXE)DJURU", meaning:"boca", category:"CORPO", audio:"djuru.mp3", file:"djuru.png"},
-    {word:"(TXE)RAĨ", meaning:"dente", category:"CORPO", audio:"rai.mp3", file:"rai.png"},
-    {word:"(TXE)APENKŨ", meaning:"língua", category:"CORPO", audio:"apenku.mp3", file:"apenku.png"},
-    {word:"(TXE)ATI'Y", meaning:"ombro", category:"CORPO", audio:"atiy.mp3", file:"atiy.png"},
-    {word:"(TXE)POTI'Á", meaning:"peito", category:"CORPO", audio:"potia.mp3", file:"potia.png"},
-    {word:"(TXE)PÓ", meaning:"mão", category:"CORPO", audio:"po.mp3", file:"po.png"},
-    {word:"(TXE)KWÃ", meaning:"dedo da mão", category:"CORPO", audio:"kwa.mp3", file:"kwa.png"},
-    {word:"(TXE)RYÉ", meaning:"barriga", category:"CORPO", audio:"rye.mp3", file:"rye.png"},
-    {word:"(TXE)PURU'Ã", meaning:"umbigo", category:"CORPO", audio:"purua.mp3", file:"purua.png"},
-    {word:"(TXE)TYMÃ", meaning:"perna", category:"CORPO", audio:"tyma.mp3", file:"tyma.png"},
-    {word:"(TXE)TÃKÃ", meaning:"joelho", category:"CORPO", audio:"taka.mp3", file:"taka.png"},
-    {word:"(TXE)ADJU'Y", meaning:"pescoço", category:"CORPO", audio:"adjuy.mp3", file:"adjuy.png"},
-    {word:"(TXE)DJYWÁ", meaning:"braço", category:"CORPO", audio:"djywa.mp3", file:"djywa.png"},
-    {word:"(TXE)PY", meaning:"pé", category:"CORPO", audio:"py.mp3", file:"py.png"},
-    {word:"(TXE)PYTSÃ", meaning:"dedo do pé", category:"CORPO", audio:"pytsa.mp3", file:"pytsa.png"},
+    {word:"AKÃ", meaning:"cabeça", category:"CORPO", audio:"aka.mp3", file:"aka.png"},
+    {word:"AWY", meaning:"cabelo", category:"CORPO", audio:"awy.mp3", file:"awy.png"},
+    {word:"KUPÉ", meaning:"costas", category:"CORPO", audio:"kupe.mp3", file:"kupe.png"},
+    {word:"POAPY", meaning:"pulso", category:"CORPO", audio:"poapy.mp3", file:"poapy.png"},
+    {word:"NAMBI", meaning:"orelha", category:"CORPO", audio:"nambi.mp3", file:"nambi.png"},
+    {word:"APYTSÃ-KWÁ", meaning:"ouvido", category:"CORPO", audio:"apytsangwa.mp3", file:"apytsangwa.png"},
+    {word:"APYTÉ", meaning:"testa", category:"CORPO", audio:"apyte.mp3", file:"apyte.png"},
+    {word:"RETSÁ", meaning:"olho", category:"CORPO", audio:"retsa.mp3", file:"retsa.png"},
+    {word:"ROWÁ", meaning:"rosto", category:"CORPO", audio:"rowa.mp3", file:"rowa.png"},
+    {word:"APYINGWÁ", meaning:"nariz", category:"CORPO", audio:"apyingwa.mp3", file:"apyingwa.png"},
+    {word:"DJURU", meaning:"boca", category:"CORPO", audio:"djuru.mp3", file:"djuru.png"},
+    {word:"RAĨ", meaning:"dente", category:"CORPO", audio:"rai.mp3", file:"rai.png"},
+    {word:"APENKŨ", meaning:"língua", category:"CORPO", audio:"apenku.mp3", file:"apenku.png"},
+    {word:"ATI'Y", meaning:"ombro", category:"CORPO", audio:"atiy.mp3", file:"atiy.png"},
+    {word:"POTI'Á", meaning:"peito", category:"CORPO", audio:"potia.mp3", file:"potia.png"},
+    {word:"PÓ", meaning:"mão", category:"CORPO", audio:"po.mp3", file:"po.png"},
+    {word:"KWÃ", meaning:"dedo da mão", category:"CORPO", audio:"kwa.mp3", file:"kwa.png"},
+    {word:"RYÉ", meaning:"barriga", category:"CORPO", audio:"rye.mp3", file:"rye.png"},
+    {word:"PURU'Ã", meaning:"umbigo", category:"CORPO", audio:"purua.mp3", file:"purua.png"},
+    {word:"TYMÃ", meaning:"perna", category:"CORPO", audio:"tyma.mp3", file:"tyma.png"},
+    {word:"TÃKÃ", meaning:"joelho", category:"CORPO", audio:"taka.mp3", file:"taka.png"},
+    {word:"ADJU'Y", meaning:"pescoço", category:"CORPO", audio:"adjuy.mp3", file:"adjuy.png"},
+    {word:"DJYWÁ", meaning:"braço", category:"CORPO", audio:"djywa.mp3", file:"djywa.png"},
+    {word:"PY", meaning:"pé", category:"CORPO", audio:"py.mp3", file:"py.png"},
+    {word:"PYTSÃ", meaning:"dedo do pé", category:"CORPO", audio:"pytsa.mp3", file:"pytsa.png"},
 
     // PARENTESCO
     {word:"TXETSY", meaning:"minha mãe", category:"PARENTESCO", audio:"txetsy.mp3", file:"txetsy.png"},
@@ -197,7 +197,7 @@ function periodNow() {
         return {
             name: "Manhã",
             icon: "☀",
-            title: "Bom dia de jornada!",
+            title: "Ko´ẽ Porã!",
             desc: "A luz da manhã abre o caminho para novas descobertas.",
             msg: "A jornada começa com a luz do dia."
         };
@@ -207,7 +207,7 @@ function periodNow() {
         return {
             name: "Tarde",
             icon: "◉",
-            title: "Boa tarde de jornada!",
+            title: "Ka´aru Porã!",
             desc: "O caminho continua. Observe cada detalhe e descubra.",
             msg: "A tarde convida a explorar."
         };
@@ -216,7 +216,7 @@ function periodNow() {
     return {
         name: "Noite",
         icon: "☾",
-        title: "Boa noite de jornada!",
+        title: "Pỹtũ Porã!",
         desc: "Quando a noite chega, a atenção ilumina o caminho.",
         msg: "A noite também guarda descobertas."
     };
