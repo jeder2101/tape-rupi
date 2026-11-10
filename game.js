@@ -163,10 +163,82 @@ const state = {
     answered: false,
     sound: true,
     time: null,
-    questions: []
+    questions: [],
+    salvar: true
 };
 
 const $ = id => document.getElementById(id);
+
+
+/* =========================================================
+   4-B. PROGRESSO PERSISTENTE (localStorage)
+   ========================================================= */
+
+const SAVE_KEY = "tape-rupi-progresso";
+const SAVE_VERSION = 1;
+
+const FASES_INFO = {
+    1: { nome: "Fase 1", nivel: "Fácil",   icone: "🌱" },
+    2: { nome: "Fase 2", nivel: "Médio",   icone: "🌿" },
+    3: { nome: "Fase 3", nivel: "Difícil", icone: "🌳" },
+    4: { nome: "Fase 4", nivel: "Avançado",icone: "⭐" }
+};
+
+function lerProgresso() {
+    try {
+        const bruto = localStorage.getItem(SAVE_KEY);
+        if (!bruto) return null;
+        const dados = JSON.parse(bruto);
+        if (!dados || dados.v !== SAVE_VERSION) return null;
+        if (typeof dados.fase !== "number") return null;
+        if (typeof dados.index !== "number") return null;
+        if (typeof dados.score !== "number") return null;
+        return dados;
+    } catch (e) { return null; }
+}
+
+function salvarProgresso() {
+    if (!state.salvar) return;
+    try {
+        localStorage.setItem(SAVE_KEY, JSON.stringify({
+            v: SAVE_VERSION,
+            fase: state.fase,
+            index: state.index,
+            score: state.score,
+            data: new Date().toISOString()
+        }));
+    } catch (e) {
+        console.warn("[save] erro:", e);
+    }
+}
+
+function apagarProgresso() {
+    try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
+}
+
+function faseDesbloqueada(n) {
+    if (n === 1) return true;
+    const p = lerProgresso();
+    if (!p) return false;
+    // qualquer fase <= (última fase concluída + 1) está liberada
+    if (typeof p.concluidas !== "number") return n <= 1;
+    return n <= p.concluidas + 1;
+}
+
+function registrarConclusao(fase) {
+    try {
+        const p = lerProgresso() || { v: SAVE_VERSION, concluidas: 0 };
+        if (typeof p.concluidas !== "number") p.concluidas = 0;
+        p.concluidas = Math.max(p.concluidas, fase);
+        p.v = SAVE_VERSION;
+        p.data = new Date().toISOString();
+        // dados de posição zerados: ao voltar, o jogador escolhe a fase
+        p.fase = fase + 1 <= 4 ? fase + 1 : fase;
+        p.index = 0;
+        p.score = 0;
+        localStorage.setItem(SAVE_KEY, JSON.stringify(p));
+    } catch (e) {}
+}
 
 
 /* =========================================================
@@ -212,25 +284,24 @@ function periodNow() {
    ========================================================= */
 
 function screen(id) {
-
     ["home", "game", "finish"].forEach(x => {
         $(x).classList.toggle("active", x === id);
     });
+    if (id === "home") {
+        atualizarSeletorFase();
+        atualizarBotaoContinuar();
+    }
 }
 
 
 /* =========================================================
-   7. ÁUDIO (mp3 dos assets)
+   7. ÁUDIO
    ========================================================= */
 
 function audio(file) {
-
     if (!state.sound || !file) return;
-
     const a = new Audio(ASSET.audio + file);
-
     a.volume = 0.85;
-
     a.play().catch(() => {});
 }
 
@@ -244,11 +315,9 @@ function shuffle(a) {
 }
 
 function pickThree(item, list) {
-
     const others = shuffle(
         list.filter(x => x.word !== item.word)
     ).slice(0, 2);
-
     return shuffle([item, ...others]);
 }
 
@@ -270,10 +339,7 @@ function buildQuestions() {
     const qs = [];
 
     const firstItem = VOCABULARY.find(v => v.word === "ADJAKÁ");
-
-    if (!firstItem) {
-        throw new Error("A palavra ADJAKÁ não foi encontrada.");
-    }
+    if (!firstItem) throw new Error("A palavra ADJAKÁ não foi encontrada.");
 
     const objectGroup = VOCABULARY.filter(v => v.category === "OBJETOS");
 
@@ -286,20 +352,10 @@ function buildQuestions() {
         choices: pickThree(firstItem, objectGroup).map(x => x.word)
     };
 
-    [
-        "CORES",
-        "ANIMAIS",
-        "CORPO",
-        "PARENTESCO",
-        "OBJETOS",
-        "ALIMENTOS"
-    ].forEach(cat => {
+    ["CORES","ANIMAIS","CORPO","PARENTESCO","OBJETOS","ALIMENTOS"].forEach(cat => {
 
         let group = VOCABULARY.filter(v => v.category === cat);
-
-        if (cat === "OBJETOS") {
-            group = group.filter(v => v.word !== "ADJAKÁ");
-        }
+        if (cat === "OBJETOS") group = group.filter(v => v.word !== "ADJAKÁ");
 
         const quantidade =
             cat === "CORPO" ? 5 :
@@ -307,9 +363,7 @@ function buildQuestions() {
             cat === "PARENTESCO" ? 4 : 3;
 
         shuffle(group).slice(0, quantidade).forEach(item => {
-
             const opts = pickThree(item, group);
-
             qs.push({
                 type: "word",
                 kind: cat,
@@ -318,27 +372,19 @@ function buildQuestions() {
                 target: item.word,
                 choices: opts.map(x => x.word)
             });
-
         });
     });
 
-    // Sorteia entre 0 e 7 (o array pode ter 0..10, mas os acima de 7
-    // ainda não têm grafia Nhandewa confirmada — ver NUMEROS_PENDENTES)
     const numerosValidos = NUMBER_VOCABULARY.filter(
         n => n.word && n.word !== "..."
     );
 
     shuffle(numerosValidos).slice(0, 4).forEach(n => {
-
         const opts = shuffle(
-            numerosValidos.filter(
-                x => Math.abs(x.value - n.value) <= 2
-            )
+            numerosValidos.filter(x => Math.abs(x.value - n.value) <= 2)
         ).slice(0, 3);
 
-        if (!opts.some(x => x.value === n.value)) {
-            opts[0] = n;
-        }
+        if (!opts.some(x => x.value === n.value)) opts[0] = n;
 
         qs.push({
             type: "number",
@@ -354,12 +400,9 @@ function buildQuestions() {
         v => v.category === "ANIMAIS" && v.file
     );
 
-    [0, 1, 2, 3, 4, 5, 6, 7].forEach(n => {
-
+    [0,1,2,3,4,5,6,7].forEach(n => {
         const opts = shuffle(
-            numerosValidos.filter(
-                x => Math.abs(x.value - n) <= 2
-            )
+            numerosValidos.filter(x => Math.abs(x.value - n) <= 2)
         ).slice(0, 3);
 
         if (!opts.some(x => x.value === n)) {
@@ -389,27 +432,66 @@ function buildQuestions() {
    10. INICIAR JORNADA
    ========================================================= */
 
+function construirPerguntasDaFase(fase) {
+    if (fase === 1) return buildQuestions();
+    if (fase === 2 && window.FASE2) return window.FASE2.buildQuestions();
+    if (fase === 3 && window.FASE3) return window.FASE3.buildQuestions();
+    if (fase === 4 && window.FASE4) return window.FASE4.buildQuestions();
+    return buildQuestions();
+}
+
 function start(fase) {
+
+    const alvo = fase || 1;
+
+    if (!faseDesbloqueada(alvo)) {
+        console.warn("[start] fase", alvo, "bloqueada.");
+        return;
+    }
 
     state.index = 0;
     state.score = 0;
-    state.fase = fase || 1;
+    state.fase = alvo;
     state.time = periodNow();
-
-    if (state.fase === 1) {
-        state.questions = buildQuestions();
-    } else if (state.fase === 2 && window.FASE2) {
-        state.questions = window.FASE2.buildQuestions();
-    } else if (state.fase === 3 && window.FASE3) {
-        state.questions = window.FASE3.buildQuestions();
-    } else {
-        state.questions = buildQuestions();
-    }
+    state.questions = construirPerguntasDaFase(alvo);
 
     $("time-chip").textContent =
         "FASE " + state.fase + " · " + state.time.name.toUpperCase();
+    $("period-label").textContent =
+        "FASE " + state.fase + " · " + (FASES_INFO[state.fase]?.nivel || "");
+    $("greeting").textContent = state.time.title;
+    $("period-desc").textContent = state.time.desc;
+    $("period-icon").textContent = state.time.icon;
+    $("period-name").textContent = state.time.name;
+    $("period-message").textContent = state.time.msg;
 
-    $("period-label").textContent = "FASE " + state.fase;
+    screen("game");
+    salvarProgresso();
+    render();
+}
+
+function continuarSalvo() {
+
+    const p = lerProgresso();
+    if (!p) { start(1); return; }
+
+    const fase = Math.min(Math.max(p.fase || 1, 1), 4);
+    const idx = Math.max(0, p.index | 0);
+    const pts = Math.max(0, p.score | 0);
+
+    state.fase = fase;
+    state.score = pts;
+    state.index = 0; // reconstrói a fila, mas mantém pontuação
+    state.time = periodNow();
+    state.questions = construirPerguntasDaFase(fase);
+
+    // tenta ir direto ao desafio salvo (se caber no tamanho atual)
+    if (idx < state.questions.length) state.index = idx;
+
+    $("time-chip").textContent =
+        "FASE " + state.fase + " · " + state.time.name.toUpperCase();
+    $("period-label").textContent =
+        "FASE " + state.fase + " · " + (FASES_INFO[state.fase]?.nivel || "");
     $("greeting").textContent = state.time.title;
     $("period-desc").textContent = state.time.desc;
     $("period-icon").textContent = state.time.icon;
@@ -428,35 +510,27 @@ function start(fase) {
 function createImage(item, className = "question-image") {
 
     const img = document.createElement("img");
-
     img.className = className;
     img.alt = item.meaning || "Imagem do vocabulário Nhandewa";
-
     img.onerror = function() {
-
         const warning = document.createElement("span");
-
         warning.className = "image-missing";
         warning.textContent =
             "Imagem ausente: " + (item.file || "arquivo não informado");
-
         this.replaceWith(warning);
     };
-
     img.src = getImagePath(item);
-
     return img;
 }
 
 
 /* =========================================================
-   12. ATUALIZAR TELA DO DESAFIO
+   12. ATUALIZAR TELA
    ========================================================= */
 
 function render() {
 
     const q = state.questions[state.index];
-
     state.answered = false;
 
     $("qnum").textContent =
@@ -481,7 +555,6 @@ function render() {
 
     $("feedback").textContent = "";
     $("feedback").className = "feedback";
-
     $("next").disabled = true;
 
     $("next").textContent =
@@ -495,14 +568,12 @@ function render() {
 
 
 /* =========================================================
-   13. APRESENTAÇÃO DAS IMAGENS
-   Trata "word" e "word-new".
+   13. VISUAL — IMAGENS + FALLBACK
    ========================================================= */
 
 function visual(q) {
 
     const box = $("visual");
-
     box.innerHTML = "";
     box.classList.remove("number-mode");
 
@@ -510,11 +581,8 @@ function visual(q) {
     $("listen").onclick = null;
 
     if (q.type === "word" || q.type === "word-new") {
-
         const item = word(q.target);
-
         if (!item) {
-            // palavra nova (fase 2/3) que ainda não tem imagem em VOCABULARY
             const note = document.createElement("span");
             note.className = "visual-note";
             note.textContent = "PALAVRA NOVA";
@@ -530,7 +598,6 @@ function visual(q) {
         label.textContent = "OBSERVE A IMAGEM";
 
         card.append(createImage(item, "visual-image"), label);
-
         box.append(card);
 
         $("listen").disabled = false;
@@ -538,9 +605,7 @@ function visual(q) {
     }
 
     else if (q.type === "number") {
-
         box.classList.add("number-mode");
-
         const card = document.createElement("div");
         card.className = "visual-card number-card";
 
@@ -556,7 +621,6 @@ function visual(q) {
         box.append(card);
 
         const item = numberWord(q.target);
-
         if (item && item.word !== "...") {
             $("listen").disabled = false;
             $("listen").onclick = () => audio(item.audio);
@@ -564,21 +628,16 @@ function visual(q) {
     }
 
     else if (q.type === "count") {
-
         const wrap = document.createElement("div");
         wrap.className = "visual-count";
 
         if (q.target === 0) {
-
             const empty = document.createElement("span");
             empty.className = "visual-note";
             empty.textContent = "NENHUM ANIMAL";
             wrap.append(empty);
-
         } else {
-
             for (let i = 0; i < q.target; i++) {
-
                 const img = createImage(q.countItem, "count-animal-image");
                 img.alt = "Animal " + (i + 1);
                 wrap.append(img);
@@ -592,28 +651,22 @@ function visual(q) {
         note.textContent = q.target === 0
             ? "OBSERVE A IMAGEM"
             : "CONTE AS FIGURAS";
-
         box.append(note);
     }
 }
 
 
 /* =========================================================
-   14. ALTERNATIVAS — SOMENTE TEXTO
-   Guarda o valor em data-value para a correção não depender
-   do texto visível.
+   14. ALTERNATIVAS
    ========================================================= */
 
 function answers(q) {
 
     const box = $("answers");
-
     box.innerHTML = "";
 
     q.choices.forEach(v => {
-
         const b = document.createElement("button");
-
         b.className = "answer";
         b.type = "button";
         b.dataset.value = String(v);
@@ -626,14 +679,13 @@ function answers(q) {
         }
 
         b.addEventListener("click", () => check(v, b));
-
         box.append(b);
     });
 }
 
 
 /* =========================================================
-   15. CORREÇÃO DAS RESPOSTAS
+   15. CORREÇÃO
    ========================================================= */
 
 function check(value, button) {
@@ -645,43 +697,29 @@ function check(value, button) {
 
     state.answered = true;
 
-    document.querySelectorAll(".answer").forEach(b => {
-        b.disabled = true;
-    });
+    document.querySelectorAll(".answer").forEach(b => b.disabled = true);
 
     if (ok) {
-
         state.score += 10;
         button.classList.add("correct");
-
-        $("feedback").textContent =
-            "AGUYJEVETE! Você encontrou a resposta.";
+        $("feedback").textContent = "AGUYJEVETE! Você encontrou a resposta.";
         $("feedback").className = "feedback";
 
         if (window.som) window.som.acerto();
 
         const item = (q.type === "word" || q.type === "word-new")
-            ? word(q.target)
-            : null;
+            ? word(q.target) : null;
 
-        if (item) {
-            audio(item.audio);
-        } else if (q.type === "number" || q.type === "count") {
+        if (item) audio(item.audio);
+        else if (q.type === "number" || q.type === "count") {
             const n = numberWord(q.target);
             if (n && n.word !== "...") audio(n.audio);
         }
-
     } else {
-
         button.classList.add("wrong");
-
-        // destaca a alternativa certa pelo data-value
         const right = [...document.querySelectorAll(".answer")]
             .find(b => b.dataset.value === String(q.target));
-
-        if (right) {
-            right.classList.add("correct");
-        }
+        if (right) right.classList.add("correct");
 
         $("feedback").textContent =
             "Ainda não! Observe novamente. A resposta certa está destacada.";
@@ -698,6 +736,7 @@ function check(value, button) {
         state.score >= 40 ? "★ ☆ ☆" : "☆ ☆ ☆";
 
     $("next").disabled = false;
+    salvarProgresso();
 }
 
 
@@ -711,19 +750,17 @@ function next() {
 
     if (state.index < state.questions.length - 1) {
         state.index++;
+        salvarProgresso();
         render();
         return;
     }
 
-    if (state.fase === 1 && window.FASE2) {
-        start(2);
-        return;
-    }
+    // fim de fase
+    registrarConclusao(state.fase);
 
-    if (state.fase === 2 && window.FASE3) {
-        start(3);
-        return;
-    }
+    if (state.fase === 1 && window.FASE2) { start(2); return; }
+    if (state.fase === 2 && window.FASE3) { start(3); return; }
+    if (state.fase === 3 && window.FASE4) { start(4); return; }
 
     finish();
 }
@@ -740,58 +777,146 @@ function finish() {
 
     $("finish-message").textContent =
         state.time.title +
-        " Você completou as fases 1, 2 e 3 com " +
+        " Você completou esta fase com " +
         state.score +
-        " pontos. Continue explorando e aprendendo!";
+        " pontos. Escolha outra fase ou comece uma nova jornada.";
 
-    $("time-chip").textContent = "JORNADA CONCLUÍDA";
+    $("time-chip").textContent = "FASE CONCLUÍDA";
 
     if (window.som) window.som.acerto();
+
+    // libera próxima fase, limpa posição da atual
+    registrarConclusao(state.fase);
+    apagarProgresso();
 
     screen("finish");
 }
 
 
 /* =========================================================
-   18. BOTÕES E EVENTOS
+   18. SELETOR DE FASE NA TELA INICIAL
    ========================================================= */
 
-$("start").addEventListener("click", function () { start(1); });
+function atualizarSeletorFase() {
 
-$("again").addEventListener("click", function () { start(1); });
+    const box = document.getElementById("fase-botoes");
+    if (!box) return;
+
+    box.innerHTML = "";
+
+    [1, 2, 3, 4].forEach(n => {
+
+        const info = FASES_INFO[n];
+        const liberada = faseDesbloqueada(n);
+        const btn = document.createElement("button");
+
+        btn.type = "button";
+        btn.className = "fase-btn";
+        btn.dataset.fase = String(n);
+
+        if (!liberada) {
+            btn.disabled = true;
+            btn.title = "Conclua a fase anterior para liberar";
+        }
+
+        btn.innerHTML =
+            "<span>" + info.icone + " " + info.nome + "</span>" +
+            "<small>" + info.nivel + "</small>";
+
+        btn.addEventListener("click", function () {
+            if (btn.disabled) return;
+            start(n);
+        });
+
+        box.append(btn);
+    });
+}
+
+
+/* =========================================================
+   19. BOTÃO "CONTINUAR"
+   ========================================================= */
+
+function atualizarBotaoContinuar() {
+
+    const botao = document.getElementById("continue");
+    if (!botao) return;
+
+    const p = lerProgresso();
+
+    // sem progresso salvo de posição, esconde
+    if (!p || typeof p.fase !== "number" || typeof p.index !== "number") {
+        botao.style.display = "none";
+        return;
+    }
+    if (p.score === 0 && p.index === 0) {
+        botao.style.display = "none";
+        return;
+    }
+
+    botao.style.display = "";
+
+    const fase = Math.min(Math.max(p.fase, 1), 4);
+    const info = FASES_INFO[fase];
+    const data = p.data ? new Date(p.data) : null;
+    const quando = data
+        ? data.toLocaleDateString("pt-BR") + " · " +
+          data.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
+        : "";
+
+    botao.textContent =
+        "CONTINUAR · " + info.icone + " " + info.nome +
+        " · DESAFIO " + (p.index + 1) +
+        " · " + p.score + " PTS" +
+        (quando ? " · " + quando : "");
+}
+
+
+/* =========================================================
+   20. BOTÕES E EVENTOS
+   ========================================================= */
+
+$("start").addEventListener("click", function () {
+    // "Começar" volta sempre para a fase 1 e zera o progresso de posição
+    state.salvar = true;
+    apagarProgresso();
+    start(1);
+});
+
+$("again").addEventListener("click", function () {
+    apagarProgresso();
+    start(1);
+});
 
 $("next").addEventListener("click", next);
 
 $("home-button").addEventListener("click", function () {
-
     $("time-chip").textContent =
         "JORNADA DA " + periodNow().name.toUpperCase();
-
     screen("home");
 });
 
 $("sound").addEventListener("click", function () {
-
     state.sound = !state.sound;
-
     $("sound").textContent = state.sound ? "♫" : "♪̸";
-
     $("sound").setAttribute(
         "aria-label",
         state.sound ? "Desativar sons" : "Ativar sons"
     );
 });
 
+document.getElementById("continue")?.addEventListener("click", continuarSalvo);
+
 
 /* =========================================================
-   19. IDENTIFICAÇÃO DO PERÍODO DO DIA
+   21. BOOT
    ========================================================= */
 
 (function () {
-
     const p = periodNow();
-
     $("time-chip").textContent =
         "JORNADA DA " + p.name.toUpperCase();
 
+    atualizarSeletorFase();
+    atualizarBotaoContinuar();
 })();
