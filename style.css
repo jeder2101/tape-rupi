@@ -1326,3 +1326,30 @@ aside blockquote {
     text-align: center;
     overflow-wrap: anywhere;
 }
+/* NOVA IDENTIDADE VISUAL TAPE-RUPI */
+:root {
+    --cor-principal: #FFB000;
+    --cor-secundaria: #FF6542;
+    --cor-destaque: #00B8D9;
+    --cor-roxa: #8D55D9;
+    --cor-fundo: #FFF1D6;
+    --cor-texto: #263238;
+}
+
+body {
+    background-color: var(--cor-fundo);
+    color: var(--cor-texto);
+}
+
+button {
+    background: var(--cor-principal);
+    color: #263238;
+    border: 2px solid #E18B00;
+    border-radius: 12px;
+    font-weight: bold;
+}
+
+button:hover {
+    background: var(--cor-secundaria);
+    color: white;
+}
