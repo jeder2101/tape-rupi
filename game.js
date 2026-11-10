@@ -4,23 +4,24 @@
 /* =========================================================
    TAPE-RUPI — JORNADA DE APRENDIZAGEM NHANDEWA
 
+   PASTAS DOS ARQUIVOS:
+
    IMAGENS:
-   assets/imagens/objetos/
-   assets/imagens/alimentos/
-   assets/imagens/animais/
-   assets/imagens/cores/
-   assets/imagens/corpo/
-   assets/imagens/parentesco/
+   assets/imagens/
 
    ÁUDIOS:
-   assets/audio/palavras/
+   assets/audio/
+
+   TELA INICIAL:
+   assets/tela-de-inicio/
 
    CORREÇÕES:
    1. Primeira pergunta obrigatoriamente ADJAKÁ.
    2. Alternativas somente em texto.
-   3. Imagens carregadas pelos caminhos dos arquivos.
-   4. Contagem de animais com imagens reais.
-   5. Números de 0 a 7 preservados.
+   3. Todas as imagens na mesma pasta.
+   4. Todos os áudios na mesma pasta.
+   5. Contagem de animais com imagens reais.
+   6. Números de 0 a 7 preservados.
    ========================================================= */
 
 
@@ -29,34 +30,16 @@
    ========================================================= */
 
 const ASSET = {
-    words: "assets/audio/palavras/",
-
-    images: "assets/imagens/vocabulario/",
-    animals: "assets/imagens/animais/",
-    objects: "assets/imagens/objetos/",
-    foods: "assets/imagens/alimentos/",
-    colors: "assets/imagens/cores/",
-    body: "assets/imagens/corpo/",
-    family: "assets/imagens/parentesco/"
+    images: "assets/imagens/",
+    audio: "assets/audio/",
+    home: "assets/tela-de-inicio/"
 };
 
 
-/* Identifica a pasta de imagens de cada categoria. */
+/* Todas as imagens são carregadas de assets/imagens/. */
 
 function getImagePath(item) {
-
-    const folders = {
-        OBJETOS: ASSET.objects,
-        ALIMENTOS: ASSET.foods,
-        ANIMAIS: ASSET.animals,
-        CORES: ASSET.colors,
-        CORPO: ASSET.body,
-        PARENTESCO: ASSET.family
-    };
-
-    const folder = folders[item.category] || ASSET.images;
-
-    return folder + item.file;
+    return ASSET.images + item.file;
 }
 
 
@@ -80,7 +63,7 @@ const NUMBER_PENDING = [8,9,10];
 
 /* =========================================================
    3. VOCABULÁRIO NHANDEWA
-   Todos os itens possuem arquivo de imagem.
+   Todos os arquivos de imagem ficam na mesma pasta.
    ========================================================= */
 
 const VOCABULARY = [
@@ -237,13 +220,14 @@ function screen(id) {
 
 /* =========================================================
    7. ÁUDIO
+   Todos os áudios são carregados de assets/audio/.
    ========================================================= */
 
 function audio(file) {
 
     if (!state.sound || !file) return;
 
-    const a = new Audio(ASSET.words + file);
+    const a = new Audio(ASSET.audio + file);
 
     a.volume = 0.85;
 
@@ -456,6 +440,7 @@ function start() {
 
 /* =========================================================
    11. CARREGAMENTO DE IMAGENS
+   Todas as imagens ficam em assets/imagens/.
    ========================================================= */
 
 function createImage(item, className = "question-image") {
