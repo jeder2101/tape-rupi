@@ -1,7 +1,6 @@
 /* =====================================================
-   TAPE-RUPI — ÁUDIO COMPLETO
-   Ambiente (floresta sintetizada), acerto, erro, clique.
-   Expõe: window.som.{acerto, erro, clique, ambiente, pararAmbiente}
+   TAPE-RUPI — ÁUDIO COMPLETO (com detecção automática
+   de acerto/erro via classes .correct e .wrong)
    ===================================================== */
 
 (function () {
@@ -11,49 +10,34 @@
   let master = null;
   let ambienteGain = null;
   let ambienteLigado = false;
-  let ambienteIniciado = false; // evita reiniciar nós
-  let preferenciaLigada = true; // ambiente começa ligado por padrão
+  let ambienteIniciado = false;
+  let preferenciaLigada = true;
   const fontesAmbiente = [];
 
-  /* ---------------------------------------------
-     Contexto de áudio
-     --------------------------------------------- */
+  /* ---------- contexto ---------- */
 
   function criarContexto() {
     if (ctx) return ctx;
     const AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC) {
-      console.warn('[som] AudioContext indisponível');
-      return null;
-    }
+    if (!AC) { console.warn('[som] AudioContext indisponível'); return null; }
     try {
       ctx = new AC();
       master = ctx.createGain();
       master.gain.value = 0.5;
       master.connect(ctx.destination);
-      console.log('[som] contexto criado, estado:', ctx.state);
       return ctx;
-    } catch (e) {
-      console.error('[som] erro ao criar contexto:', e);
-      return null;
-    }
+    } catch (e) { console.error('[som] erro contexto:', e); return null; }
   }
 
   function acordar() {
     if (!ctx) criarContexto();
     if (!ctx) return;
     if (ctx.state === 'suspended') {
-      ctx.resume().then(function () {
-        console.log('[som] contexto retomado:', ctx.state);
-      }).catch(function (e) {
-        console.warn('[som] falha ao retomar:', e);
-      });
+      ctx.resume().catch(function () {});
     }
   }
 
-  /* ---------------------------------------------
-     Toms curtos
-     --------------------------------------------- */
+  /* ---------- tons ---------- */
 
   function tom(freq, inicio, duracao, tipo, volume) {
     if (!ctx) return;
@@ -72,63 +56,57 @@
   }
 
   function acerto() {
-    const c = criarContexto();
-    if (!c) return;
+    const c = criarContexto(); if (!c) return;
     acordar();
     const t = c.currentTime + 0.03;
     tom(523.25, t, 0.18, 'triangle', 0.25);
     tom(659.25, t + 0.10, 0.20, 'triangle', 0.25);
     tom(783.99, t + 0.20, 0.30, 'triangle', 0.28);
+    console.log('[som] ACERTO');
   }
 
   function erro() {
-    const c = criarContexto();
-    if (!c) return;
+    const c = criarContexto(); if (!c) return;
     acordar();
     const t = c.currentTime + 0.03;
     tom(311.13, t, 0.22, 'sawtooth', 0.18);
     tom(207.65, t + 0.14, 0.32, 'sawtooth', 0.18);
+    console.log('[som] ERRO');
   }
 
   function clique() {
-    const c = criarContexto();
-    if (!c) return;
+    const c = criarContexto(); if (!c) return;
     acordar();
     const t = c.currentTime + 0.01;
     tom(880, t, 0.07, 'square', 0.10);
   }
 
-  /* ---------------------------------------------
-     Ruído rosa para o ambiente
-     --------------------------------------------- */
+  /* ---------- ruído ---------- */
 
   function criarRuido(segundos) {
     const sr = ctx.sampleRate;
     const n = Math.floor(sr * segundos);
     const buf = ctx.createBuffer(1, n, sr);
     const d = buf.getChannelData(0);
-    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+    let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
     for (let i = 0; i < n; i++) {
       const w = Math.random() * 2 - 1;
-      b0 = 0.99886 * b0 + w * 0.0555179;
-      b1 = 0.99332 * b1 + w * 0.0750759;
-      b2 = 0.96900 * b2 + w * 0.1538520;
-      b3 = 0.86650 * b3 + w * 0.3104856;
-      b4 = 0.55000 * b4 + w * 0.5329522;
-      b5 = -0.7616 * b5 - w * 0.0168980;
-      d[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + w * 0.5362) * 0.10;
-      b6 = w * 0.115926;
+      b0 = 0.99886*b0 + w*0.0555179;
+      b1 = 0.99332*b1 + w*0.0750759;
+      b2 = 0.96900*b2 + w*0.1538520;
+      b3 = 0.86650*b3 + w*0.3104856;
+      b4 = 0.55000*b4 + w*0.5329522;
+      b5 = -0.7616*b5 - w*0.0168980;
+      d[i] = (b0+b1+b2+b3+b4+b5+b6 + w*0.5362) * 0.10;
+      b6 = w*0.115926;
     }
     return buf;
   }
 
-  /* ---------------------------------------------
-     Ambiente — floresta sintetizada
-     --------------------------------------------- */
+  /* ---------- ambiente ---------- */
 
   function iniciarAmbiente() {
-    const c = criarContexto();
-    if (!c) return;
+    const c = criarContexto(); if (!c) return;
     acordar();
     if (ambienteLigado || !preferenciaLigada) return;
 
@@ -137,7 +115,6 @@
       ambienteGain.gain.value = 0.0001;
       ambienteGain.connect(master);
 
-      // Vento / folhas
       const ruido = c.createBufferSource();
       ruido.buffer = criarRuido(5);
       ruido.loop = true;
@@ -155,7 +132,6 @@
       ruidoGain.connect(ambienteGain);
       ruido.start();
 
-      // Pássaros distantes
       const passaro = c.createOscillator();
       passaro.type = 'sine';
       passaro.frequency.value = 2200;
@@ -180,7 +156,6 @@
 
       fontesAmbiente.push(ruido, passaro, lfo);
       ambienteIniciado = true;
-      console.log('[som] nós de ambiente criados');
     }
 
     const now = c.currentTime;
@@ -189,7 +164,7 @@
     ambienteGain.gain.exponentialRampToValueAtTime(0.22, now + 2.0);
     ambienteLigado = true;
     atualizarBotao();
-    console.log('[som] ambiente LIGADO');
+    console.log('[som] ambiente ON');
   }
 
   function pararAmbiente() {
@@ -200,17 +175,12 @@
     ambienteGain.gain.linearRampToValueAtTime(0.0001, now + 0.5);
     ambienteLigado = false;
     atualizarBotao();
-    console.log('[som] ambiente DESLIGADO');
+    console.log('[som] ambiente OFF');
   }
 
   function alternarAmbiente() {
-    if (ambienteLigado) {
-      preferenciaLigada = false;
-      pararAmbiente();
-    } else {
-      preferenciaLigada = true;
-      iniciarAmbiente();
-    }
+    if (ambienteLigado) { preferenciaLigada = false; pararAmbiente(); }
+    else { preferenciaLigada = true; iniciarAmbiente(); }
   }
 
   function atualizarBotao() {
@@ -221,35 +191,27 @@
     b.setAttribute('aria-pressed', ambienteLigado ? 'true' : 'false');
   }
 
-  /* ---------------------------------------------
-     Desbloqueio automático do primeiro gesto
-     --------------------------------------------- */
+  /* ---------- desbloqueio autoplay ---------- */
 
   let desbloqueou = false;
-
   function desbloquear() {
     if (desbloqueou) return;
     desbloqueou = true;
     criarContexto();
     acordar();
-    // Depois de desbloquear, tenta ligar o ambiente se a preferência estiver ligada
     setTimeout(function () {
       if (preferenciaLigada && !ambienteLigado) iniciarAmbiente();
-    }, 150);
+    }, 200);
   }
-
   document.addEventListener('pointerdown', desbloquear, true);
   document.addEventListener('touchstart', desbloquear, true);
   document.addEventListener('keydown', desbloquear, true);
 
-  /* ---------------------------------------------
-     Botão de som — independente do game.js
-     --------------------------------------------- */
+  /* ---------- botão som sem depender do game.js ---------- */
 
   function prepararBotao() {
     const b = document.getElementById('sound');
     if (!b) return;
-    // Remove listeners anteriores do game.js se possível
     const novo = b.cloneNode(true);
     b.parentNode.replaceChild(novo, b);
     novo.addEventListener('click', function (e) {
@@ -260,10 +222,52 @@
     atualizarBotao();
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', prepararBotao);
-  } else {
+  /* ---------- detectar acerto/erro pelas classes ---------- */
+
+  function observarRespostas() {
+    const alvo = document.getElementById('answers');
+    if (!alvo) {
+      console.warn('[som] #answers não encontrado — som de respostas desativado');
+      return;
+    }
+
+    // dispara quando elementos ganham classes .correct / .wrong
+    const mo = new MutationObserver(function (lote) {
+      lote.forEach(function (m) {
+        if (m.type !== 'attributes' || m.attributeName !== 'class') return;
+        const el = m.target;
+        if (!el.classList) return;
+        if (el.classList.contains('correct')) acerto();
+        else if (el.classList.contains('wrong')) erro();
+      });
+    });
+
+    mo.observe(alvo, { attributes: true, attributeFilter: ['class'], subtree: true });
+
+    // fallback extra: clique direto em .answer já validado
+    alvo.addEventListener('click', function (e) {
+      const btn = e.target.closest('.answer');
+      if (!btn) return;
+      // o game.js pode já ter limpo classes; então só toca clique como feedback
+      if (!btn.classList.contains('correct') && !btn.classList.contains('wrong')) {
+        clique();
+      }
+    }, true);
+
+    console.log('[som] observador de respostas ativo em #answers');
+  }
+
+  /* ---------- boot ---------- */
+
+  function boot() {
     prepararBotao();
+    observarRespostas();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
   }
 
   window.som = {
