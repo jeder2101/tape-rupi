@@ -1218,3 +1218,88 @@ aside blockquote {
         padding: 5px !important;
     }
 }
+/* =====================================================
+   CORREÇÃO DEFINITIVA — NÚMEROS
+   ===================================================== */
+
+#visual.number-mode {
+    min-height: 270px !important;
+    height: auto !important;
+    overflow: visible !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 15px !important;
+}
+
+#visual.number-mode .number-card {
+    width: 230px !important;
+    max-width: 100% !important;
+    min-height: 235px !important;
+    height: auto !important;
+    margin: 0 auto !important;
+    padding: 12px !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+
+    overflow: visible !important;
+}
+
+#visual.number-mode .number-visual {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    width: 155px !important;
+    height: 155px !important;
+    min-width: 155px !important;
+    min-height: 155px !important;
+    flex: 0 0 155px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    border: 5px solid #718b5a !important;
+    border-radius: 50% !important;
+
+    background: #fffdf7 !important;
+    color: #102b25 !important;
+
+    font-family: 'Playfair Display', serif !important;
+    font-size: 76px !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+
+    visibility: visible !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+}
+
+#visual.number-mode .visual-label {
+    display: block !important;
+    color: #718b5a !important;
+    font-size: 10px !important;
+    text-align: center !important;
+}
+
+@media (max-width: 600px) {
+    #visual.number-mode {
+        min-height: 225px !important;
+    }
+
+    #visual.number-mode .number-visual {
+        width: 135px !important;
+        height: 135px !important;
+        min-width: 135px !important;
+        min-height: 135px !important;
+        flex-basis: 135px !important;
+        font-size: 62px !important;
+    }
+
+    #visual.number-mode .number-card {
+        min-height: 205px !important;
+    }
+}
