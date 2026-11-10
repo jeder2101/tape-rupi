@@ -1,316 +1,435 @@
 
 "use strict";
 
-/* TAPE-RUPI — conteúdo Nhandewa organizado por temas.
-   Formas dos números 0–7 preservadas conforme informadas pelo usuário.
-   8–10 ficam reservados até receber a forma confirmada.
-   Corpo humano e parentesco seguem Lições de Gramática Nhandewa-Guarani, vol. 2.
+/* =========================================================
+   TAPE-RUPI — JORNADA DE APRENDIZAGEM NHANDEWA
+
+   IMAGENS:
+   assets/imagens/objetos/
+   assets/imagens/alimentos/
+   assets/imagens/animais/
+   assets/imagens/cores/
+   assets/imagens/corpo/
+   assets/imagens/parentesco/
+
+   ÁUDIOS:
+   assets/audio/palavras/
 
    CORREÇÕES:
-   1. Primeira questão obrigatoriamente: ADJAKÁ.
-   2. Alternativas somente em texto, sem imagens ou emojis.
-   3. Demais imagens permanecem somente na área de apresentação da pergunta.
-*/
+   1. Primeira pergunta obrigatoriamente ADJAKÁ.
+   2. Alternativas somente em texto.
+   3. Imagens carregadas pelos caminhos dos arquivos.
+   4. Contagem de animais com imagens reais.
+   5. Números de 0 a 7 preservados.
+   ========================================================= */
+
+
+/* =========================================================
+   1. CAMINHOS DOS ARQUIVOS
+   ========================================================= */
 
 const ASSET = {
     words: "assets/audio/palavras/",
+
     images: "assets/imagens/vocabulario/",
-    animals: "assets/imagens/animais/"
+    animals: "assets/imagens/animais/",
+    objects: "assets/imagens/objetos/",
+    foods: "assets/imagens/alimentos/",
+    colors: "assets/imagens/cores/",
+    body: "assets/imagens/corpo/",
+    family: "assets/imagens/parentesco/"
 };
 
+
+/* Identifica a pasta de imagens de cada categoria. */
+
+function getImagePath(item) {
+
+    const folders = {
+        OBJETOS: ASSET.objects,
+        ALIMENTOS: ASSET.foods,
+        ANIMAIS: ASSET.animals,
+        CORES: ASSET.colors,
+        CORPO: ASSET.body,
+        PARENTESCO: ASSET.family
+    };
+
+    const folder = folders[item.category] || ASSET.images;
+
+    return folder + item.file;
+}
+
+
+/* =========================================================
+   2. NÚMEROS NHANDEWA
+   ========================================================= */
+
 const NUMBER_VOCABULARY = [
-    {value:0,word:"DJERE",audio:"numero-0.mp3"},
-    {value:1,word:"PETEĨ",audio:"numero-1.mp3"},
-    {value:2,word:"MÕKÕI",audio:"numero-2.mp3"},
-    {value:3,word:"MBOAPY",audio:"numero-3.mp3"},
-    {value:4,word:"IRUNDY",audio:"numero-4.mp3"},
-    {value:5,word:"NIRUI",audio:"numero-5.mp3"},
-    {value:6,word:"YPÉ",audio:"numero-6.mp3"},
-    {value:7,word:"TXA'I",audio:"numero-7.mp3"}
+    {value:0, word:"DJERE", audio:"numero-0.mp3"},
+    {value:1, word:"PETEĨ", audio:"numero-1.mp3"},
+    {value:2, word:"MÕKÕI", audio:"numero-2.mp3"},
+    {value:3, word:"MBOAPY", audio:"numero-3.mp3"},
+    {value:4, word:"IRUNDY", audio:"numero-4.mp3"},
+    {value:5, word:"NIRUI", audio:"numero-5.mp3"},
+    {value:6, word:"YPÉ", audio:"numero-6.mp3"},
+    {value:7, word:"TXA'I", audio:"numero-7.mp3"}
 ];
 
 const NUMBER_PENDING = [8,9,10];
 
+
+/* =========================================================
+   3. VOCABULÁRIO NHANDEWA
+   Todos os itens possuem arquivo de imagem.
+   ========================================================= */
+
 const VOCABULARY = [
 
-    // OBJETOS E ALIMENTOS
-    {word:"KUTXÁ",meaning:"colher",emoji:"🥄",category:"OBJETOS",audio:"kutxa.mp3",file:"kutxa.png"},
-    {word:"KUTXÁ RAKWÁ",meaning:"garfo",emoji:"🍴",category:"OBJETOS",audio:"kutxa_rakwa.mp3",file:"kutxa-rakwa.png"},
-    {word:"KARÓ",meaning:"copo/caneca",emoji:"🥤",category:"OBJETOS",audio:"karo.mp3",file:"karo.png"},
-    {word:"DJAPEPÓ",meaning:"panela",emoji:"🍲",category:"OBJETOS",audio:"djapepo.mp3",file:"djapepo.png"},
-    {word:"ADJAKÁ",meaning:"cesto",emoji:"🧺",category:"OBJETOS",audio:"adjaka.mp3",file:"adjaka.png"},
-    {word:"IRYMPẼ",meaning:"peneira",emoji:"🧺",category:"OBJETOS",audio:"irympe.mp3",file:"irympe.png"},
-    {word:"TIPITI",meaning:"espremedor",emoji:"🪵",category:"OBJETOS",audio:"tipiti.mp3",file:"tipiti.png"},
+    // OBJETOS
+    {word:"KUTXÁ", meaning:"colher", category:"OBJETOS", audio:"kutxa.mp3", file:"kutxa.png"},
+    {word:"KUTXÁ RAKWÁ", meaning:"garfo", category:"OBJETOS", audio:"kutxa_rakwa.mp3", file:"kutxa-rakwa.png"},
+    {word:"KARÓ", meaning:"copo/caneca", category:"OBJETOS", audio:"karo.mp3", file:"karo.png"},
+    {word:"DJAPEPÓ", meaning:"panela", category:"OBJETOS", audio:"djapepo.mp3", file:"djapepo.png"},
+    {word:"ADJAKÁ", meaning:"cesto", category:"OBJETOS", audio:"adjaka.mp3", file:"adjaka.png"},
+    {word:"IRYMPẼ", meaning:"peneira", category:"OBJETOS", audio:"irympe.mp3", file:"irympe.png"},
+    {word:"TIPITI", meaning:"espremedor", category:"OBJETOS", audio:"tipiti.mp3", file:"tipiti.png"},
 
-    {word:"AKADJU",meaning:"caju",emoji:"🥭",category:"ALIMENTOS",audio:"akadju.mp3",file:"akadju.png"},
-    {word:"PAKOWÁ",meaning:"banana",emoji:"🍌",category:"ALIMENTOS",audio:"pakowa.mp3",file:"pakowa.png"},
-    {word:"TSANDIÁ",meaning:"melancia",emoji:"🍉",category:"ALIMENTOS",audio:"tsandia.mp3",file:"tsandia.png"},
-    {word:"AWATI",meaning:"milho",emoji:"🌽",category:"ALIMENTOS",audio:"awati.mp3",file:"awati.png"},
-    {word:"MANDI'O",meaning:"mandioca",emoji:"🌱",category:"ALIMENTOS",audio:"mandio.mp3",file:"mandio.png"},
-    {word:"PIRÁ",meaning:"peixe",emoji:"🐟",category:"ANIMAIS",audio:"pira.mp3",file:"pira.png"},
-    {word:"KAMBY",meaning:"leite",emoji:"🥛",category:"ALIMENTOS",audio:"kamby.mp3",file:"kamby.png"},
-    {word:"TSO'O",meaning:"carne",emoji:"🍖",category:"ALIMENTOS",audio:"tsoo.mp3",file:"tsoo.png"},
+    // ALIMENTOS
+    {word:"AKADJU", meaning:"caju", category:"ALIMENTOS", audio:"akadju.mp3", file:"akadju.png"},
+    {word:"PAKOWÁ", meaning:"banana", category:"ALIMENTOS", audio:"pakowa.mp3", file:"pakowa.png"},
+    {word:"TSANDIÁ", meaning:"melancia", category:"ALIMENTOS", audio:"tsandia.mp3", file:"tsandia.png"},
+    {word:"AWATI", meaning:"milho", category:"ALIMENTOS", audio:"awati.mp3", file:"awati.png"},
+    {word:"MANDI'O", meaning:"mandioca", category:"ALIMENTOS", audio:"mandio.mp3", file:"mandio.png"},
+    {word:"PIRÁ", meaning:"peixe", category:"ANIMAIS", audio:"pira.mp3", file:"pira.png"},
+    {word:"KAMBY", meaning:"leite", category:"ALIMENTOS", audio:"kamby.mp3", file:"kamby.png"},
+    {word:"TSO'O", meaning:"carne", category:"ALIMENTOS", audio:"tsoo.mp3", file:"tsoo.png"},
 
     // ANIMAIS
-    {word:"KATXURU",meaning:"cachorro",emoji:"🐕",category:"ANIMAIS",audio:"katxuru.mp3",file:"katxuru.png"},
-    {word:"KA'I",meaning:"macaco",emoji:"🐒",category:"ANIMAIS",audio:"kai.mp3",file:"kai.png"},
-    {word:"KAPI'I'UWÁ",meaning:"capivara",emoji:"🦫",category:"ANIMAIS",audio:"kapiiuwa.mp3",file:"kapiiuwa.png"},
-    {word:"MBOÍ",meaning:"cobra",emoji:"🐍",category:"ANIMAIS",audio:"mboi.mp3",file:"mboi.png"},
-    {word:"NHANDU",meaning:"aranha",emoji:"🕷️",category:"ANIMAIS",audio:"nhandu.mp3",file:"nhandu.png"},
-    {word:"TAY",meaning:"formiga",emoji:"🐜",category:"ANIMAIS",audio:"tay.mp3",file:"tay.png"},
-    {word:"TXIWI",meaning:"gato",emoji:"🐈",category:"ANIMAIS",audio:"txiwi.mp3",file:"txiwi.png"},
-    {word:"DJAKARÉ",meaning:"jacaré",emoji:"🐊",category:"ANIMAIS",audio:"djakare.mp3",file:"djakare.png"},
-    {word:"TSUGWAI",meaning:"porco doméstico",emoji:"🐖",category:"ANIMAIS",audio:"tsugwai.mp3",file:"tsugwai.png"},
-    {word:"POPO'I",meaning:"borboleta",emoji:"🦋",category:"ANIMAIS",audio:"popoi.mp3",file:"popoi.png"},
-    {word:"KURURU",meaning:"sapo",emoji:"🐸",category:"ANIMAIS",audio:"kururu.mp3",file:"kururu.png"},
+    {word:"KATXURU", meaning:"cachorro", category:"ANIMAIS", audio:"katxuru.mp3", file:"katxuru.png"},
+    {word:"KA'I", meaning:"macaco", category:"ANIMAIS", audio:"kai.mp3", file:"kai.png"},
+    {word:"KAPI'I'UWÁ", meaning:"capivara", category:"ANIMAIS", audio:"kapiiuwa.mp3", file:"kapiiuwa.png"},
+    {word:"MBOÍ", meaning:"cobra", category:"ANIMAIS", audio:"mboi.mp3", file:"mboi.png"},
+    {word:"NHANDU", meaning:"aranha", category:"ANIMAIS", audio:"nhandu.mp3", file:"nhandu.png"},
+    {word:"TAY", meaning:"formiga", category:"ANIMAIS", audio:"tay.mp3", file:"tay.png"},
+    {word:"TXIWI", meaning:"gato", category:"ANIMAIS", audio:"txiwi.mp3", file:"txiwi.png"},
+    {word:"DJAKARÉ", meaning:"jacaré", category:"ANIMAIS", audio:"djakare.mp3", file:"djakare.png"},
+    {word:"TSUGWAI", meaning:"porco doméstico", category:"ANIMAIS", audio:"tsugwai.mp3", file:"tsugwai.png"},
+    {word:"POPO'I", meaning:"borboleta", category:"ANIMAIS", audio:"popoi.mp3", file:"popoi.png"},
+    {word:"KURURU", meaning:"sapo", category:"ANIMAIS", audio:"kururu.mp3", file:"kururu.png"},
 
     // CORES
-    {word:"PYNTÃ",meaning:"cor",emoji:"🎨",category:"CORES",audio:"pynta.mp3"},
-    {word:"IDJU",meaning:"cor",emoji:"🎨",category:"CORES",audio:"idju.mp3"},
-    {word:"IKYRY",meaning:"cor",emoji:"🎨",category:"CORES",audio:"ikyry.mp3"},
-    {word:"OWY",meaning:"cor",emoji:"🎨",category:"CORES",audio:"owy.mp3"},
-    {word:"UŨ",meaning:"cor",emoji:"🎨",category:"CORES",audio:"uu.mp3"},
-    {word:"MORÕTI",meaning:"cor",emoji:"🎨",category:"CORES",audio:"moroti.mp3"},
+    {word:"PYNTÃ", meaning:"cor", category:"CORES", audio:"pynta.mp3", file:"pynta.png"},
+    {word:"IDJU", meaning:"cor", category:"CORES", audio:"idju.mp3", file:"idju.png"},
+    {word:"IKYRY", meaning:"cor", category:"CORES", audio:"ikyry.mp3", file:"ikyry.png"},
+    {word:"OWY", meaning:"cor", category:"CORES", audio:"owy.mp3", file:"owy.png"},
+    {word:"UŨ", meaning:"cor", category:"CORES", audio:"uu.mp3", file:"uu.png"},
+    {word:"MORÕTI", meaning:"cor", category:"CORES", audio:"moroti.mp3", file:"moroti.png"},
 
     // CORPO HUMANO
-    {word:"(TXE)AKÃ",meaning:"cabeça",emoji:"🧑",category:"CORPO",audio:"aka.mp3"},
-    {word:"(TXE)'AWY",meaning:"cabelo",emoji:"💇",category:"CORPO",audio:"awy.mp3"},
-    {word:"(TXE)KUPÉ",meaning:"costas",emoji:"🧍",category:"CORPO",audio:"kupe.mp3"},
-    {word:"(TXE)POAPY",meaning:"pulso",emoji:"⌚",category:"CORPO",audio:"poapy.mp3"},
-    {word:"(TXE)NAMBI",meaning:"orelha",emoji:"👂",category:"CORPO",audio:"nambi.mp3"},
-    {word:"(TXE)APYTSÃ-KWÁ",meaning:"ouvido",emoji:"👂",category:"CORPO",audio:"apytsangwa.mp3"},
-    {word:"(TXE)APYTÉ",meaning:"testa",emoji:"🙂",category:"CORPO",audio:"apyte.mp3"},
-    {word:"(TXE)RETSÁ",meaning:"olho",emoji:"👁️",category:"CORPO",audio:"retsa.mp3"},
-    {word:"(TXE)ROWÁ",meaning:"rosto",emoji:"😊",category:"CORPO",audio:"rowa.mp3"},
-    {word:"(TXE)APYINGWÁ",meaning:"nariz",emoji:"👃",category:"CORPO",audio:"apyingwa.mp3"},
-    {word:"(TXE)DJURU",meaning:"boca",emoji:"👄",category:"CORPO",audio:"djuru.mp3"},
-    {word:"(TXE)RAĨ",meaning:"dente",emoji:"🦷",category:"CORPO",audio:"rai.mp3"},
-    {word:"(TXE)APENKŨ",meaning:"língua",emoji:"👅",category:"CORPO",audio:"apenku.mp3"},
-    {word:"(TXE)ATI'Y",meaning:"ombro",emoji:"🧍",category:"CORPO",audio:"atiy.mp3"},
-    {word:"(TXE)POTI'Á",meaning:"peito",emoji:"🫁",category:"CORPO",audio:"potia.mp3"},
-    {word:"(TXE)PÓ",meaning:"mão",emoji:"✋",category:"CORPO",audio:"po.mp3"},
-    {word:"(TXE)KWÃ",meaning:"dedo da mão",emoji:"☝️",category:"CORPO",audio:"kwa.mp3"},
-    {word:"(TXE)RYÉ",meaning:"barriga",emoji:"🧍",category:"CORPO",audio:"rye.mp3"},
-    {word:"(TXE)PURU'Ã",meaning:"umbigo",emoji:"🧍",category:"CORPO",audio:"purua.mp3"},
-    {word:"(TXE)TYMÃ",meaning:"perna",emoji:"🦵",category:"CORPO",audio:"tyma.mp3"},
-    {word:"(TXE)TÃKÃ",meaning:"joelho",emoji:"🦵",category:"CORPO",audio:"taka.mp3"},
-    {word:"(TXE)ADJU'Y",meaning:"pescoço",emoji:"🧍",category:"CORPO",audio:"adjuy.mp3"},
-    {word:"(TXE)DJYWÁ",meaning:"braço",emoji:"💪",category:"CORPO",audio:"djywa.mp3"},
-    {word:"(TXE)PY",meaning:"pé",emoji:"🦶",category:"CORPO",audio:"py.mp3"},
-    {word:"(TXE)PYTSÃ",meaning:"dedo do pé",emoji:"🦶",category:"CORPO",audio:"pytsa.mp3"},
+    {word:"(TXE)AKÃ", meaning:"cabeça", category:"CORPO", audio:"aka.mp3", file:"aka.png"},
+    {word:"(TXE)'AWY", meaning:"cabelo", category:"CORPO", audio:"awy.mp3", file:"awy.png"},
+    {word:"(TXE)KUPÉ", meaning:"costas", category:"CORPO", audio:"kupe.mp3", file:"kupe.png"},
+    {word:"(TXE)POAPY", meaning:"pulso", category:"CORPO", audio:"poapy.mp3", file:"poapy.png"},
+    {word:"(TXE)NAMBI", meaning:"orelha", category:"CORPO", audio:"nambi.mp3", file:"nambi.png"},
+    {word:"(TXE)APYTSÃ-KWÁ", meaning:"ouvido", category:"CORPO", audio:"apytsangwa.mp3", file:"apytsangwa.png"},
+    {word:"(TXE)APYTÉ", meaning:"testa", category:"CORPO", audio:"apyte.mp3", file:"apyte.png"},
+    {word:"(TXE)RETSÁ", meaning:"olho", category:"CORPO", audio:"retsa.mp3", file:"retsa.png"},
+    {word:"(TXE)ROWÁ", meaning:"rosto", category:"CORPO", audio:"rowa.mp3", file:"rowa.png"},
+    {word:"(TXE)APYINGWÁ", meaning:"nariz", category:"CORPO", audio:"apyingwa.mp3", file:"apyingwa.png"},
+    {word:"(TXE)DJURU", meaning:"boca", category:"CORPO", audio:"djuru.mp3", file:"djuru.png"},
+    {word:"(TXE)RAĨ", meaning:"dente", category:"CORPO", audio:"rai.mp3", file:"rai.png"},
+    {word:"(TXE)APENKŨ", meaning:"língua", category:"CORPO", audio:"apenku.mp3", file:"apenku.png"},
+    {word:"(TXE)ATI'Y", meaning:"ombro", category:"CORPO", audio:"atiy.mp3", file:"atiy.png"},
+    {word:"(TXE)POTI'Á", meaning:"peito", category:"CORPO", audio:"potia.mp3", file:"potia.png"},
+    {word:"(TXE)PÓ", meaning:"mão", category:"CORPO", audio:"po.mp3", file:"po.png"},
+    {word:"(TXE)KWÃ", meaning:"dedo da mão", category:"CORPO", audio:"kwa.mp3", file:"kwa.png"},
+    {word:"(TXE)RYÉ", meaning:"barriga", category:"CORPO", audio:"rye.mp3", file:"rye.png"},
+    {word:"(TXE)PURU'Ã", meaning:"umbigo", category:"CORPO", audio:"purua.mp3", file:"purua.png"},
+    {word:"(TXE)TYMÃ", meaning:"perna", category:"CORPO", audio:"tyma.mp3", file:"tyma.png"},
+    {word:"(TXE)TÃKÃ", meaning:"joelho", category:"CORPO", audio:"taka.mp3", file:"taka.png"},
+    {word:"(TXE)ADJU'Y", meaning:"pescoço", category:"CORPO", audio:"adjuy.mp3", file:"adjuy.png"},
+    {word:"(TXE)DJYWÁ", meaning:"braço", category:"CORPO", audio:"djywa.mp3", file:"djywa.png"},
+    {word:"(TXE)PY", meaning:"pé", category:"CORPO", audio:"py.mp3", file:"py.png"},
+    {word:"(TXE)PYTSÃ", meaning:"dedo do pé", category:"CORPO", audio:"pytsa.mp3", file:"pytsa.png"},
 
     // PARENTESCO
-    {word:"TXETSY",meaning:"minha mãe",emoji:"👩",category:"PARENTESCO",audio:"txetsy.mp3"},
-    {word:"TXERU",meaning:"meu pai",emoji:"👨",category:"PARENTESCO",audio:"txeru.mp3"},
-    {word:"NHANERAMÕI",meaning:"nosso avô (inclusivo)",emoji:"👴",category:"PARENTESCO",audio:"nhaneramoi.mp3"},
-    {word:"ORERAMÕI",meaning:"nosso avô (exclusivo)",emoji:"👴",category:"PARENTESCO",audio:"oreramoi.mp3"},
-    {word:"TXERA'Y",meaning:"meu filho (dito pelo pai)",emoji:"🧒",category:"PARENTESCO",audio:"txeray.mp3"},
-    {word:"TXEMEMBY",meaning:"meu filho/minha filha (dito pela mãe)",emoji:"🧒",category:"PARENTESCO",audio:"txememby.mp3"},
-    {word:"TXERADJY",meaning:"minha filha (dito pelo pai)",emoji:"👧",category:"PARENTESCO",audio:"txeradjy.mp3"},
-    {word:"TXERYWY",meaning:"meu irmão mais novo",emoji:"👦",category:"PARENTESCO",audio:"txerywy.mp3"},
-    {word:"TXERYKE'Y",meaning:"meu irmão mais velho",emoji:"🧑",category:"PARENTESCO",audio:"txerykey.mp3"},
-    {word:"TXINDY",meaning:"minha irmã mais nova",emoji:"👧",category:"PARENTESCO",audio:"txindy.mp3"},
-    {word:"TXEKYPY'Y",meaning:"minha irmã mais velha",emoji:"👩",category:"PARENTESCO",audio:"txekypy.mp3"},
-    {word:"TXETUTY",meaning:"meu tio",emoji:"👨",category:"PARENTESCO",audio:"txetuty.mp3"},
-    {word:"TXETSY'Y",meaning:"minha tia",emoji:"👩",category:"PARENTESCO",audio:"txetsyy.mp3"}
+    {word:"TXETSY", meaning:"minha mãe", category:"PARENTESCO", audio:"txetsy.mp3", file:"txetsy.png"},
+    {word:"TXERU", meaning:"meu pai", category:"PARENTESCO", audio:"txeru.mp3", file:"txeru.png"},
+    {word:"NHANERAMÕI", meaning:"nosso avô (inclusivo)", category:"PARENTESCO", audio:"nhaneramoi.mp3", file:"nhaneramoi.png"},
+    {word:"ORERAMÕI", meaning:"nosso avô (exclusivo)", category:"PARENTESCO", audio:"oreramoi.mp3", file:"oreramoi.png"},
+    {word:"TXERA'Y", meaning:"meu filho (dito pelo pai)", category:"PARENTESCO", audio:"txeray.mp3", file:"txeray.png"},
+    {word:"TXEMEMBY", meaning:"meu filho/minha filha (dito pela mãe)", category:"PARENTESCO", audio:"txememby.mp3", file:"txememby.png"},
+    {word:"TXERADJY", meaning:"minha filha (dito pelo pai)", category:"PARENTESCO", audio:"txeradjy.mp3", file:"txeradjy.png"},
+    {word:"TXERYWY", meaning:"meu irmão mais novo", category:"PARENTESCO", audio:"txerywy.mp3", file:"txerywy.png"},
+    {word:"TXERYKE'Y", meaning:"meu irmão mais velho", category:"PARENTESCO", audio:"txerykey.mp3", file:"txerykey.png"},
+    {word:"TXINDY", meaning:"minha irmã mais nova", category:"PARENTESCO", audio:"txindy.mp3", file:"txindy.png"},
+    {word:"TXEKYPY'Y", meaning:"minha irmã mais velha", category:"PARENTESCO", audio:"txekypy.mp3", file:"txekypy.png"},
+    {word:"TXETUTY", meaning:"meu tio", category:"PARENTESCO", audio:"txetuty.mp3", file:"txetuty.png"},
+    {word:"TXETSY'Y", meaning:"minha tia", category:"PARENTESCO", audio:"txetsyy.mp3", file:"txetsyy.png"}
 ];
 
+
+/* =========================================================
+   4. ESTADO DO JOGO
+   ========================================================= */
+
 const state = {
-    index:0,
-    score:0,
-    answered:false,
-    sound:true,
-    time:null,
-    questions:[]
+    index: 0,
+    score: 0,
+    answered: false,
+    sound: true,
+    time: null,
+    questions: []
 };
 
 const $ = id => document.getElementById(id);
 
-function periodNow(){
+
+/* =========================================================
+   5. PERÍODO DO DIA
+   ========================================================= */
+
+function periodNow() {
+
     const h = new Date().getHours();
 
-    if(h>=5 && h<12){
+    if (h >= 5 && h < 12) {
         return {
-            name:"Manhã",
-            icon:"☀",
-            title:"Bom dia de jornada!",
-            desc:"A luz da manhã abre o caminho para novas descobertas.",
-            msg:"A jornada começa com a luz do dia."
+            name: "Manhã",
+            icon: "☀",
+            title: "Bom dia de jornada!",
+            desc: "A luz da manhã abre o caminho para novas descobertas.",
+            msg: "A jornada começa com a luz do dia."
         };
     }
 
-    if(h>=12 && h<18){
+    if (h >= 12 && h < 18) {
         return {
-            name:"Tarde",
-            icon:"◉",
-            title:"Boa tarde de jornada!",
-            desc:"O caminho continua. Observe cada detalhe e descubra.",
-            msg:"A tarde convida a explorar."
+            name: "Tarde",
+            icon: "◉",
+            title: "Boa tarde de jornada!",
+            desc: "O caminho continua. Observe cada detalhe e descubra.",
+            msg: "A tarde convida a explorar."
         };
     }
 
     return {
-        name:"Noite",
-        icon:"☾",
-        title:"Boa noite de jornada!",
-        desc:"Quando a noite chega, a atenção ilumina o caminho.",
-        msg:"A noite também guarda descobertas."
+        name: "Noite",
+        icon: "☾",
+        title: "Boa noite de jornada!",
+        desc: "Quando a noite chega, a atenção ilumina o caminho.",
+        msg: "A noite também guarda descobertas."
     };
 }
 
-function screen(id){
-    ["home","game","finish"].forEach(x=>{
-        $(x).classList.toggle("active",x===id);
+
+/* =========================================================
+   6. NAVEGAÇÃO ENTRE TELAS
+   ========================================================= */
+
+function screen(id) {
+
+    ["home", "game", "finish"].forEach(x => {
+        $(x).classList.toggle("active", x === id);
     });
 }
 
-function audio(file){
-    if(!state.sound || !file) return;
+
+/* =========================================================
+   7. ÁUDIO
+   ========================================================= */
+
+function audio(file) {
+
+    if (!state.sound || !file) return;
 
     const a = new Audio(ASSET.words + file);
-    a.volume = .85;
-    a.play().catch(()=>{});
+
+    a.volume = 0.85;
+
+    a.play().catch(() => {});
 }
 
-function shuffle(a){
-    return [...a].sort(()=>Math.random()-.5);
+
+/* =========================================================
+   8. FUNÇÕES AUXILIARES
+   ========================================================= */
+
+function shuffle(a) {
+    return [...a].sort(() => Math.random() - 0.5);
 }
 
-function pickThree(item,list){
+function pickThree(item, list) {
+
     const others = shuffle(
-        list.filter(x=>x.word!==item.word)
-    ).slice(0,2);
+        list.filter(x => x.word !== item.word)
+    ).slice(0, 2);
 
-    return shuffle([item,...others]);
+    return shuffle([item, ...others]);
 }
 
-function buildQuestions(){
+function word(w) {
+    return VOCABULARY.find(v => v.word === w);
+}
+
+function numberWord(n) {
+    return NUMBER_VOCABULARY.find(v => v.value === n);
+}
+
+
+/* =========================================================
+   9. CRIAÇÃO DAS PERGUNTAS
+   ========================================================= */
+
+function buildQuestions() {
 
     const qs = [];
 
-    /*
-       PRIMEIRA QUESTÃO FIXA:
-       A imagem apresentada será a do ADJAKÁ.
-       A resposta correta será ADJAKÁ.
-       As alternativas serão somente palavras.
-    */
+    // PRIMEIRA QUESTÃO: ADJAKÁ
 
     const firstItem = VOCABULARY.find(
-        v=>v.word==="ADJAKÁ"
+        v => v.word === "ADJAKÁ"
     );
 
-    if(!firstItem){
-        throw new Error("A palavra ADJAKÁ não foi encontrada no vocabulário.");
+    if (!firstItem) {
+        throw new Error("A palavra ADJAKÁ não foi encontrada.");
     }
 
     const objectGroup = VOCABULARY.filter(
-        v=>v.category==="OBJETOS"
+        v => v.category === "OBJETOS"
     );
 
     const firstQuestion = {
-        type:"word",
-        kind:"OBJETOS",
-        prompt:"Como se diz cesto na língua Nhandewa?",
-        hint:"Observe a figura e escolha a palavra correta.",
-        target:"ADJAKÁ",
-        choices:pickThree(firstItem,objectGroup).map(x=>x.word)
+        type: "word",
+        kind: "OBJETOS",
+        prompt: "Como se diz cesto na língua Nhandewa?",
+        hint: "Observe a figura e escolha a palavra correta.",
+        target: "ADJAKÁ",
+        choices: pickThree(firstItem, objectGroup).map(x => x.word)
     };
 
-    // RECONHECIMENTO DAS PALAVRAS POR CATEGORIA
-    ["CORES","ANIMAIS","CORPO","PARENTESCO","OBJETOS","ALIMENTOS"].forEach(cat=>{
+
+    // PERGUNTAS DE VOCABULÁRIO
+
+    [
+        "CORES",
+        "ANIMAIS",
+        "CORPO",
+        "PARENTESCO",
+        "OBJETOS",
+        "ALIMENTOS"
+    ].forEach(cat => {
 
         let group = VOCABULARY.filter(
-            v=>v.category===cat
+            v => v.category === cat
         );
 
-        // ADJAKÁ já aparece obrigatoriamente na primeira questão.
-        if(cat==="OBJETOS"){
-            group = group.filter(v=>v.word!=="ADJAKÁ");
+        if (cat === "OBJETOS") {
+            group = group.filter(
+                v => v.word !== "ADJAKÁ"
+            );
         }
 
         const quantidade =
-            cat==="CORPO" ? 5 :
-            cat==="ANIMAIS" ? 5 :
-            cat==="PARENTESCO" ? 4 : 3;
+            cat === "CORPO" ? 5 :
+            cat === "ANIMAIS" ? 5 :
+            cat === "PARENTESCO" ? 4 : 3;
 
-        shuffle(group).slice(0,quantidade).forEach(item=>{
+        shuffle(group).slice(0, quantidade).forEach(item => {
 
-            const opts = pickThree(item,group);
+            const opts = pickThree(item, group);
 
             qs.push({
-                type:"word",
-                kind:cat,
-                prompt:"Como se diz isto na língua Nhandewa?",
-                hint:"Observe a imagem e escolha a palavra correspondente.",
-                target:item.word,
-                choices:opts.map(x=>x.word)
+                type: "word",
+                kind: cat,
+                prompt: "Como se diz isto na língua Nhandewa?",
+                hint: "Observe a imagem e escolha a palavra correspondente.",
+                target: item.word,
+                choices: opts.map(x => x.word)
             });
 
         });
     });
 
-    // NÚMEROS DE 0 A 7
-    shuffle(NUMBER_VOCABULARY).slice(0,4).forEach(n=>{
+
+    // PERGUNTAS DE NÚMEROS
+
+    shuffle(NUMBER_VOCABULARY).slice(0, 4).forEach(n => {
 
         const opts = shuffle(
             NUMBER_VOCABULARY.filter(
-                x=>Math.abs(x.value-n.value)<=2
+                x => Math.abs(x.value - n.value) <= 2
             )
-        ).slice(0,3);
+        ).slice(0, 3);
 
-        if(!opts.some(x=>x.value===n.value)){
+        if (!opts.some(x => x.value === n.value)) {
             opts[0] = n;
         }
 
         qs.push({
-            type:"number",
-            kind:"NÚMEROS",
-            prompt:"Qual é a palavra Nhandewa para este número?",
-            hint:"Observe o algarismo e escolha a forma correspondente.",
-            target:n.value,
-            choices:shuffle(opts).map(x=>x.value)
+            type: "number",
+            kind: "NÚMEROS",
+            prompt: "Qual é a palavra Nhandewa para este número?",
+            hint: "Observe o algarismo e escolha a forma correspondente.",
+            target: n.value,
+            choices: shuffle(opts).map(x => x.value)
         });
 
     });
 
-    // CONTAGEM ILUSTRADA DE ANIMAIS
-    const animalSet = ["🐟","🦋","🐸","🐜","🐢","🐦"];
 
-    [0,1,2,3,4,5,6,7].forEach((n,i)=>{
+    // CONTAGEM DE ANIMAIS COM IMAGENS REAIS
+
+    const animalSet = VOCABULARY.filter(
+        v => v.category === "ANIMAIS" && v.file
+    );
+
+    [0, 1, 2, 3, 4, 5, 6, 7].forEach(n => {
 
         const opts = shuffle(
             NUMBER_VOCABULARY.filter(
-                x=>Math.abs(x.value-n)<=2
+                x => Math.abs(x.value - n) <= 2
             )
-        ).slice(0,3);
+        ).slice(0, 3);
 
-        if(!opts.some(x=>x.value===n)){
+        if (!opts.some(x => x.value === n)) {
             opts[0] = NUMBER_VOCABULARY.find(
-                x=>x.value===n
+                x => x.value === n
             );
         }
 
+        const selectedAnimal = animalSet[
+            Math.floor(Math.random() * animalSet.length)
+        ];
+
         qs.push({
-            type:"count",
-            kind:"CONTE E DESCUBRA",
-            prompt:"Quantos animais aparecem nesta imagem?",
-            hint:"Conte cada figura uma vez e escolha a palavra do número.",
-            target:n,
-            animal:animalSet[i%animalSet.length],
-            choices:shuffle(opts).map(x=>x.value)
+            type: "count",
+            kind: "CONTE E DESCUBRA",
+            prompt: "Quantos animais aparecem nesta imagem?",
+            hint: "Conte cada figura uma vez e escolha a palavra do número.",
+            target: n,
+            countItem: selectedAnimal,
+            choices: shuffle(opts).map(x => x.value)
         });
 
     });
 
-    // A PRIMEIRA QUESTÃO NÃO É EMBARALHADA.
-    // AS OUTRAS QUESTÕES CONTINUAM ALEATÓRIAS.
+
+    // PRIMEIRA PERGUNTA FIXA.
+    // DEMAIS PERGUNTAS ALEATÓRIAS.
+
     return [
         firstQuestion,
         ...shuffle(qs)
     ];
 }
 
-function start(){
+
+/* =========================================================
+   10. INICIAR JORNADA
+   ========================================================= */
+
+function start() {
 
     state.index = 0;
     state.score = 0;
@@ -330,42 +449,68 @@ function start(){
     $("period-message").textContent = state.time.msg;
 
     screen("game");
+
     render();
 }
 
-function word(w){
-    return VOCABULARY.find(v=>v.word===w);
+
+/* =========================================================
+   11. CARREGAMENTO DE IMAGENS
+   ========================================================= */
+
+function createImage(item, className = "question-image") {
+
+    const img = document.createElement("img");
+
+    img.className = className;
+    img.alt = item.meaning || "Imagem do vocabulário Nhandewa";
+    img.src = getImagePath(item);
+
+    img.onerror = function() {
+
+        this.style.display = "none";
+
+        const warning = document.createElement("span");
+
+        warning.className = "image-missing";
+        warning.textContent = "Imagem não encontrada: " + item.file;
+
+        this.insertAdjacentElement("afterend", warning);
+    };
+
+    return img;
 }
 
-function numberWord(n){
-    return NUMBER_VOCABULARY.find(v=>v.value===n);
-}
 
-function render(){
+/* =========================================================
+   12. ATUALIZAR TELA DO DESAFIO
+   ========================================================= */
+
+function render() {
 
     const q = state.questions[state.index];
 
     state.answered = false;
 
     $("qnum").textContent =
-        "DESAFIO " + String(state.index+1).padStart(2,"0");
+        "DESAFIO " + String(state.index + 1).padStart(2, "0");
 
     $("qkind").textContent = q.kind;
     $("prompt").textContent = q.prompt;
     $("hint").textContent = q.hint;
 
     $("progress-text").textContent =
-        `${state.index+1} / ${state.questions.length}`;
+        `${state.index + 1} / ${state.questions.length}`;
 
     $("progress-fill").style.width =
-        (state.index/state.questions.length*100) + "%";
+        (state.index / state.questions.length * 100) + "%";
 
     $("score").textContent = state.score;
 
     $("stars").textContent =
-        state.score>=180 ? "★ ★ ★" :
-        state.score>=100 ? "★ ★ ☆" :
-        state.score>=40 ? "★ ☆ ☆" : "☆ ☆ ☆";
+        state.score >= 180 ? "★ ★ ★" :
+        state.score >= 100 ? "★ ★ ☆" :
+        state.score >= 40 ? "★ ☆ ☆" : "☆ ☆ ☆";
 
     $("feedback").textContent = "";
     $("feedback").className = "feedback";
@@ -373,7 +518,7 @@ function render(){
     $("next").disabled = true;
 
     $("next").textContent =
-        state.index===state.questions.length-1
+        state.index === state.questions.length - 1
         ? "VER RESULTADO →"
         : "PRÓXIMO DESAFIO →";
 
@@ -381,7 +526,12 @@ function render(){
     answers(q);
 }
 
-function visual(q){
+
+/* =========================================================
+   13. APRESENTAÇÃO DAS IMAGENS
+   ========================================================= */
+
+function visual(q) {
 
     const box = $("visual");
 
@@ -390,145 +540,180 @@ function visual(q){
     $("listen").disabled = true;
     $("listen").onclick = null;
 
-    if(q.type==="word"){
+
+    // PERGUNTA DE VOCABULÁRIO
+
+    if (q.type === "word") {
 
         const item = word(q.target);
 
+        if (!item) {
+            throw new Error("Palavra não encontrada: " + q.target);
+        }
+
         const card = document.createElement("div");
+
         card.className = "visual-card";
 
-        const symbol = document.createElement("span");
-        symbol.className = "visual-emoji";
-        symbol.textContent = item.emoji || "✦";
-
         const label = document.createElement("span");
+
         label.className = "visual-label";
-        label.textContent = "OBSERVE";
+        label.textContent = "OBSERVE A IMAGEM";
 
-        card.append(symbol,label);
+        card.append(createImage(item, "visual-image"), label);
+
         box.append(card);
-
-        // IMAGEM PERMANECE NA ÁREA DA PERGUNTA.
-        // NÃO É UTILIZADA NAS ALTERNATIVAS.
-        if(item.file){
-
-            const img = new Image();
-
-            img.src = ASSET.images + item.file;
-
-            img.onload = ()=>{
-                img.alt = "Ilustração do desafio";
-                img.style.cssText =
-                    "width:78px;height:78px;object-fit:contain";
-
-                symbol.replaceWith(img);
-            };
-        }
 
         $("listen").disabled = false;
 
-        $("listen").onclick = ()=>{
+        $("listen").onclick = () => {
             audio(item.audio);
         };
 
-    }else if(q.type==="number"){
+    }
+
+
+    // PERGUNTA DE NÚMEROS
+
+    else if (q.type === "number") {
 
         const card = document.createElement("div");
+
         card.className = "visual-card";
 
         const n = document.createElement("span");
-        n.className = "visual-emoji";
+
+        n.className = "visual-number";
         n.textContent = String(q.target);
 
         const lab = document.createElement("span");
+
         lab.className = "visual-label";
         lab.textContent = "NÚMERO";
 
-        card.append(n,lab);
+        card.append(n, lab);
+
         box.append(card);
 
-    }else{
+        const item = numberWord(q.target);
+
+        if (item) {
+            $("listen").disabled = false;
+
+            $("listen").onclick = () => {
+                audio(item.audio);
+            };
+        }
+
+    }
+
+
+    // CONTAGEM DE ANIMAIS COM IMAGENS
+
+    else if (q.type === "count") {
 
         const wrap = document.createElement("div");
+
         wrap.className = "visual-count";
 
-        for(let i=0;i<q.target;i++){
+        if (q.target === 0) {
 
-            const s = document.createElement("span");
+            const empty = document.createElement("span");
 
-            s.textContent = q.animal;
-            s.setAttribute("aria-hidden","true");
+            empty.className = "visual-note";
+            empty.textContent = "NENHUM ANIMAL";
 
-            wrap.append(s);
+            wrap.append(empty);
+
+        } else {
+
+            for (let i = 0; i < q.target; i++) {
+
+                const img = createImage(
+                    q.countItem,
+                    "count-animal-image"
+                );
+
+                img.alt = "Animal " + (i + 1);
+
+                wrap.append(img);
+            }
         }
 
         box.append(wrap);
 
-        const n = document.createElement("span");
-        n.className = "visual-note";
+        const note = document.createElement("span");
 
-        n.textContent =
-            q.target===0
-            ? "NENHUM ANIMAL"
+        note.className = "visual-note";
+
+        note.textContent =
+            q.target === 0
+            ? "OBSERVE A IMAGEM"
             : "CONTE AS FIGURAS";
 
-        box.append(n);
+        box.append(note);
     }
 }
 
-function answers(q){
+
+/* =========================================================
+   14. ALTERNATIVAS — SOMENTE TEXTO
+   ========================================================= */
+
+function answers(q) {
 
     const box = $("answers");
 
     box.innerHTML = "";
 
-    q.choices.forEach(v=>{
+    q.choices.forEach(v => {
 
         const b = document.createElement("button");
 
         b.className = "answer";
         b.type = "button";
 
-        /*
-           CORREÇÃO:
-           AS ALTERNATIVAS SÃO SOMENTE TEXTO.
-           NÃO INSERIR IMAGENS, EMOJIS OU DESENHOS.
-        */
+        // NÃO COLOCAR EMOJIS OU IMAGENS NAS ALTERNATIVAS.
 
-        if(q.type==="word"){
+        if (q.type === "word") {
 
             b.textContent = v;
 
-        }else{
+        } else {
 
             const n = numberWord(v);
 
             b.textContent = n ? n.word : String(v);
         }
 
-        b.addEventListener("click",()=>{
-            check(v,b);
+        b.addEventListener("click", () => {
+            check(v, b);
         });
 
         box.append(b);
     });
 }
 
-function check(value,button){
 
-    if(state.answered) return;
+/* =========================================================
+   15. CORREÇÃO DAS RESPOSTAS
+   ========================================================= */
+
+function check(value, button) {
+
+    if (state.answered) return;
 
     const q = state.questions[state.index];
 
-    const ok = value===q.target;
+    const ok = value === q.target;
 
     state.answered = true;
 
-    document.querySelectorAll(".answer").forEach(b=>{
+    document.querySelectorAll(".answer").forEach(b => {
         b.disabled = true;
     });
 
-    if(ok){
+    if (ok) {
 
         state.score += 10;
 
@@ -539,26 +724,29 @@ function check(value,button){
 
         $("feedback").className = "feedback";
 
-        if(q.type==="word"){
-            audio(word(q.target).audio);
-        }else if(q.type==="number" || q.type==="count"){
+        if (q.type === "word") {
+
+            audio(word(q.target)?.audio);
+
+        } else if (q.type === "number" || q.type === "count") {
+
             audio(numberWord(q.target)?.audio);
         }
 
-    }else{
+    } else {
 
         button.classList.add("wrong");
 
         const expected =
-            q.type==="word"
+            q.type === "word"
             ? q.target
             : numberWord(q.target)?.word;
 
         const right = [
             ...document.querySelectorAll(".answer")
-        ].find(b=>b.textContent===expected);
+        ].find(b => b.textContent === expected);
 
-        if(right){
+        if (right) {
             right.classList.add("correct");
         }
 
@@ -571,29 +759,40 @@ function check(value,button){
     $("score").textContent = state.score;
 
     $("stars").textContent =
-        state.score>=180 ? "★ ★ ★" :
-        state.score>=100 ? "★ ★ ☆" :
-        state.score>=40 ? "★ ☆ ☆" : "☆ ☆ ☆";
+        state.score >= 180 ? "★ ★ ★" :
+        state.score >= 100 ? "★ ★ ☆" :
+        state.score >= 40 ? "★ ☆ ☆" : "☆ ☆ ☆";
 
     $("next").disabled = false;
 }
 
-function next(){
 
-    if(!state.answered) return;
+/* =========================================================
+   16. PRÓXIMO DESAFIO
+   ========================================================= */
 
-    if(state.index<state.questions.length-1){
+function next() {
+
+    if (!state.answered) return;
+
+    if (state.index < state.questions.length - 1) {
 
         state.index++;
+
         render();
 
-    }else{
+    } else {
 
         finish();
     }
 }
 
-function finish(){
+
+/* =========================================================
+   17. FINAL DA JORNADA
+   ========================================================= */
+
+function finish() {
 
     $("progress-fill").style.width = "100%";
 
@@ -610,19 +809,25 @@ function finish(){
     screen("finish");
 }
 
-// BOTÕES DO JOGO
-$("start").addEventListener("click",start);
 
-$("again").addEventListener("click",start);
+/* =========================================================
+   18. BOTÕES E EVENTOS
+   ========================================================= */
 
-$("next").addEventListener("click",next);
+$("start").addEventListener("click", start);
 
-$("home-button").addEventListener("click",()=>{
+$("again").addEventListener("click", start);
+
+$("next").addEventListener("click", next);
+
+$("home-button").addEventListener("click", () => {
+
     $("time-chip").textContent = "JORNADA DO DIA";
+
     screen("home");
 });
 
-$("sound").addEventListener("click",()=>{
+$("sound").addEventListener("click", () => {
 
     state.sound = !state.sound;
 
@@ -635,8 +840,12 @@ $("sound").addEventListener("click",()=>{
     );
 });
 
-// IDENTIFICAÇÃO DO PERÍODO DO DIA
-(function(){
+
+/* =========================================================
+   19. IDENTIFICAÇÃO DO PERÍODO DO DIA
+   ========================================================= */
+
+(function() {
 
     const p = periodNow();
 
