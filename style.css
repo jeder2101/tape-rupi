@@ -1303,3 +1303,26 @@ aside blockquote {
         min-height: 205px !important;
     }
 }
+/* AVISO DE ARQUIVO DE IMAGEM AUSENTE */
+
+.image-missing {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 75px;
+    min-height: 65px;
+    max-width: 100%;
+
+    padding: 8px;
+    border: 2px dashed #d49a68;
+    border-radius: 10px;
+
+    background: #fff5e9;
+    color: #a34e28;
+
+    font-size: 10px;
+    font-weight: 700;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
