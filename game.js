@@ -159,6 +159,7 @@ const VOCABULARY = [
 const state = {
     index: 0,
     score: 0,
+    fase: 1,
     answered: false,
     sound: true,
     time: null,
@@ -219,8 +220,7 @@ function screen(id) {
 
 
 /* =========================================================
-   7. ÁUDIO
-   Todos os áudios são carregados de assets/audio/.
+   7. ÁUDIO (mp3 dos assets)
    ========================================================= */
 
 function audio(file) {
@@ -262,26 +262,20 @@ function numberWord(n) {
 
 
 /* =========================================================
-   9. CRIAÇÃO DAS PERGUNTAS
+   9. CRIAÇÃO DAS PERGUNTAS DA FASE 1
    ========================================================= */
 
 function buildQuestions() {
 
     const qs = [];
 
-    // PRIMEIRA QUESTÃO: ADJAKÁ
-
-    const firstItem = VOCABULARY.find(
-        v => v.word === "ADJAKÁ"
-    );
+    const firstItem = VOCABULARY.find(v => v.word === "ADJAKÁ");
 
     if (!firstItem) {
         throw new Error("A palavra ADJAKÁ não foi encontrada.");
     }
 
-    const objectGroup = VOCABULARY.filter(
-        v => v.category === "OBJETOS"
-    );
+    const objectGroup = VOCABULARY.filter(v => v.category === "OBJETOS");
 
     const firstQuestion = {
         type: "word",
@@ -292,9 +286,6 @@ function buildQuestions() {
         choices: pickThree(firstItem, objectGroup).map(x => x.word)
     };
 
-
-    // PERGUNTAS DE VOCABULÁRIO
-
     [
         "CORES",
         "ANIMAIS",
@@ -304,14 +295,10 @@ function buildQuestions() {
         "ALIMENTOS"
     ].forEach(cat => {
 
-        let group = VOCABULARY.filter(
-            v => v.category === cat
-        );
+        let group = VOCABULARY.filter(v => v.category === cat);
 
         if (cat === "OBJETOS") {
-            group = group.filter(
-                v => v.word !== "ADJAKÁ"
-            );
+            group = group.filter(v => v.word !== "ADJAKÁ");
         }
 
         const quantidade =
@@ -335,13 +322,16 @@ function buildQuestions() {
         });
     });
 
+    // Sorteia entre 0 e 7 (o array pode ter 0..10, mas os acima de 7
+    // ainda não têm grafia Nhandewa confirmada — ver NUMEROS_PENDENTES)
+    const numerosValidos = NUMBER_VOCABULARY.filter(
+        n => n.word && n.word !== "..."
+    );
 
-    // PERGUNTAS DE NÚMEROS
-
-    shuffle(NUMBER_VOCABULARY).slice(0, 4).forEach(n => {
+    shuffle(numerosValidos).slice(0, 4).forEach(n => {
 
         const opts = shuffle(
-            NUMBER_VOCABULARY.filter(
+            numerosValidos.filter(
                 x => Math.abs(x.value - n.value) <= 2
             )
         ).slice(0, 3);
@@ -358,11 +348,7 @@ function buildQuestions() {
             target: n.value,
             choices: shuffle(opts).map(x => x.value)
         });
-
     });
-
-
-    // CONTAGEM DE ANIMAIS COM IMAGENS REAIS
 
     const animalSet = VOCABULARY.filter(
         v => v.category === "ANIMAIS" && v.file
@@ -371,15 +357,13 @@ function buildQuestions() {
     [0, 1, 2, 3, 4, 5, 6, 7].forEach(n => {
 
         const opts = shuffle(
-            NUMBER_VOCABULARY.filter(
+            numerosValidos.filter(
                 x => Math.abs(x.value - n) <= 2
             )
         ).slice(0, 3);
 
         if (!opts.some(x => x.value === n)) {
-            opts[0] = NUMBER_VOCABULARY.find(
-                x => x.value === n
-            );
+            opts[0] = NUMBER_VOCABULARY.find(x => x.value === n);
         }
 
         const selectedAnimal = animalSet[
@@ -395,17 +379,9 @@ function buildQuestions() {
             countItem: selectedAnimal,
             choices: shuffle(opts).map(x => x.value)
         });
-
     });
 
-
-    // PRIMEIRA PERGUNTA FIXA.
-    // DEMAIS PERGUNTAS ALEATÓRIAS.
-
-    return [
-        firstQuestion,
-        ...shuffle(qs)
-    ];
+    return [firstQuestion, ...shuffle(qs)];
 }
 
 
@@ -413,19 +389,27 @@ function buildQuestions() {
    10. INICIAR JORNADA
    ========================================================= */
 
-function start() {
+function start(fase) {
 
     state.index = 0;
     state.score = 0;
+    state.fase = fase || 1;
     state.time = periodNow();
-    state.questions = buildQuestions();
+
+    if (state.fase === 1) {
+        state.questions = buildQuestions();
+    } else if (state.fase === 2 && window.FASE2) {
+        state.questions = window.FASE2.buildQuestions();
+    } else if (state.fase === 3 && window.FASE3) {
+        state.questions = window.FASE3.buildQuestions();
+    } else {
+        state.questions = buildQuestions();
+    }
 
     $("time-chip").textContent =
-        "JORNADA DA " + state.time.name.toUpperCase();
+        "FASE " + state.fase + " · " + state.time.name.toUpperCase();
 
-    $("period-label").textContent =
-        "JORNADA DA " + state.time.name.toUpperCase();
-
+    $("period-label").textContent = "FASE " + state.fase;
     $("greeting").textContent = state.time.title;
     $("period-desc").textContent = state.time.desc;
     $("period-icon").textContent = state.time.icon;
@@ -433,14 +417,12 @@ function start() {
     $("period-message").textContent = state.time.msg;
 
     screen("game");
-
     render();
 }
 
 
 /* =========================================================
    11. CARREGAMENTO DE IMAGENS
-   Todas as imagens ficam em assets/imagens/.
    ========================================================= */
 
 function createImage(item, className = "question-image") {
@@ -514,6 +496,7 @@ function render() {
 
 /* =========================================================
    13. APRESENTAÇÃO DAS IMAGENS
+   Trata "word" e "word-new".
    ========================================================= */
 
 function visual(q) {
@@ -526,23 +509,23 @@ function visual(q) {
     $("listen").disabled = true;
     $("listen").onclick = null;
 
-
-    // PERGUNTA DE VOCABULÁRIO
-
-    if (q.type === "word") {
+    if (q.type === "word" || q.type === "word-new") {
 
         const item = word(q.target);
 
         if (!item) {
-            throw new Error("Palavra não encontrada: " + q.target);
+            // palavra nova (fase 2/3) que ainda não tem imagem em VOCABULARY
+            const note = document.createElement("span");
+            note.className = "visual-note";
+            note.textContent = "PALAVRA NOVA";
+            box.append(note);
+            return;
         }
 
         const card = document.createElement("div");
-
         card.className = "visual-card";
 
         const label = document.createElement("span");
-
         label.className = "visual-label";
         label.textContent = "OBSERVE A IMAGEM";
 
@@ -551,15 +534,8 @@ function visual(q) {
         box.append(card);
 
         $("listen").disabled = false;
-
-        $("listen").onclick = () => {
-            audio(item.audio);
-        };
-
+        $("listen").onclick = () => audio(item.audio);
     }
-
-
-    // PERGUNTA DE NÚMEROS
 
     else if (q.type === "number") {
 
@@ -581,44 +557,30 @@ function visual(q) {
 
         const item = numberWord(q.target);
 
-        if (item) {
+        if (item && item.word !== "...") {
             $("listen").disabled = false;
-
-            $("listen").onclick = () => {
-                audio(item.audio);
-            };
+            $("listen").onclick = () => audio(item.audio);
         }
     }
-
-
-    // CONTAGEM DE ANIMAIS COM IMAGENS
 
     else if (q.type === "count") {
 
         const wrap = document.createElement("div");
-
         wrap.className = "visual-count";
 
         if (q.target === 0) {
 
             const empty = document.createElement("span");
-
             empty.className = "visual-note";
             empty.textContent = "NENHUM ANIMAL";
-
             wrap.append(empty);
 
         } else {
 
             for (let i = 0; i < q.target; i++) {
 
-                const img = createImage(
-                    q.countItem,
-                    "count-animal-image"
-                );
-
+                const img = createImage(q.countItem, "count-animal-image");
                 img.alt = "Animal " + (i + 1);
-
                 wrap.append(img);
             }
         }
@@ -626,11 +588,8 @@ function visual(q) {
         box.append(wrap);
 
         const note = document.createElement("span");
-
         note.className = "visual-note";
-
-        note.textContent =
-            q.target === 0
+        note.textContent = q.target === 0
             ? "OBSERVE A IMAGEM"
             : "CONTE AS FIGURAS";
 
@@ -641,6 +600,8 @@ function visual(q) {
 
 /* =========================================================
    14. ALTERNATIVAS — SOMENTE TEXTO
+   Guarda o valor em data-value para a correção não depender
+   do texto visível.
    ========================================================= */
 
 function answers(q) {
@@ -655,23 +616,16 @@ function answers(q) {
 
         b.className = "answer";
         b.type = "button";
+        b.dataset.value = String(v);
 
-        // NÃO COLOCAR EMOJIS OU IMAGENS NAS ALTERNATIVAS.
-
-        if (q.type === "word") {
-
+        if (q.type === "word" || q.type === "word-new") {
             b.textContent = v;
-
         } else {
-
             const n = numberWord(v);
-
             b.textContent = n ? n.word : String(v);
         }
 
-        b.addEventListener("click", () => {
-            check(v, b);
-        });
+        b.addEventListener("click", () => check(v, b));
 
         box.append(b);
     });
@@ -687,7 +641,6 @@ function check(value, button) {
     if (state.answered) return;
 
     const q = state.questions[state.index];
-
     const ok = value === q.target;
 
     state.answered = true;
@@ -699,35 +652,32 @@ function check(value, button) {
     if (ok) {
 
         state.score += 10;
-
         button.classList.add("correct");
 
         $("feedback").textContent =
             "AGUYJEVETE! Você encontrou a resposta.";
-
         $("feedback").className = "feedback";
 
-        if (q.type === "word") {
+        if (window.som) window.som.acerto();
 
-            audio(word(q.target)?.audio);
+        const item = (q.type === "word" || q.type === "word-new")
+            ? word(q.target)
+            : null;
 
+        if (item) {
+            audio(item.audio);
         } else if (q.type === "number" || q.type === "count") {
-
-            audio(numberWord(q.target)?.audio);
+            const n = numberWord(q.target);
+            if (n && n.word !== "...") audio(n.audio);
         }
 
     } else {
 
         button.classList.add("wrong");
 
-        const expected =
-            q.type === "word"
-            ? q.target
-            : numberWord(q.target)?.word;
-
-        const right = [
-            ...document.querySelectorAll(".answer")
-        ].find(b => b.textContent === expected);
+        // destaca a alternativa certa pelo data-value
+        const right = [...document.querySelectorAll(".answer")]
+            .find(b => b.dataset.value === String(q.target));
 
         if (right) {
             right.classList.add("correct");
@@ -735,8 +685,9 @@ function check(value, button) {
 
         $("feedback").textContent =
             "Ainda não! Observe novamente. A resposta certa está destacada.";
-
         $("feedback").className = "feedback error";
+
+        if (window.som) window.som.erro();
     }
 
     $("score").textContent = state.score;
@@ -759,15 +710,22 @@ function next() {
     if (!state.answered) return;
 
     if (state.index < state.questions.length - 1) {
-
         state.index++;
-
         render();
-
-    } else {
-
-        finish();
+        return;
     }
+
+    if (state.fase === 1 && window.FASE2) {
+        start(2);
+        return;
+    }
+
+    if (state.fase === 2 && window.FASE3) {
+        start(3);
+        return;
+    }
+
+    finish();
 }
 
 
@@ -778,16 +736,17 @@ function next() {
 function finish() {
 
     $("progress-fill").style.width = "100%";
-
     $("final-score").textContent = state.score;
 
     $("finish-message").textContent =
         state.time.title +
-        " Sua jornada terminou com " +
+        " Você completou as fases 1, 2 e 3 com " +
         state.score +
         " pontos. Continue explorando e aprendendo!";
 
     $("time-chip").textContent = "JORNADA CONCLUÍDA";
+
+    if (window.som) window.som.acerto();
 
     screen("finish");
 }
@@ -797,25 +756,25 @@ function finish() {
    18. BOTÕES E EVENTOS
    ========================================================= */
 
-$("start").addEventListener("click", start);
+$("start").addEventListener("click", function () { start(1); });
 
-$("again").addEventListener("click", start);
+$("again").addEventListener("click", function () { start(1); });
 
 $("next").addEventListener("click", next);
 
-$("home-button").addEventListener("click", () => {
+$("home-button").addEventListener("click", function () {
 
-    $("time-chip").textContent = "JORNADA DO DIA";
+    $("time-chip").textContent =
+        "JORNADA DA " + periodNow().name.toUpperCase();
 
     screen("home");
 });
 
-$("sound").addEventListener("click", () => {
+$("sound").addEventListener("click", function () {
 
     state.sound = !state.sound;
 
-    $("sound").textContent =
-        state.sound ? "♫" : "♪̸";
+    $("sound").textContent = state.sound ? "♫" : "♪̸";
 
     $("sound").setAttribute(
         "aria-label",
@@ -828,7 +787,7 @@ $("sound").addEventListener("click", () => {
    19. IDENTIFICAÇÃO DO PERÍODO DO DIA
    ========================================================= */
 
-(function() {
+(function () {
 
     const p = periodNow();
 
