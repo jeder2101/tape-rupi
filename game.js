@@ -449,19 +449,19 @@ function createImage(item, className = "question-image") {
 
     img.className = className;
     img.alt = item.meaning || "Imagem do vocabulário Nhandewa";
-    img.src = getImagePath(item);
 
     img.onerror = function() {
-
-        this.style.display = "none";
 
         const warning = document.createElement("span");
 
         warning.className = "image-missing";
-        warning.textContent = "Imagem não encontrada: " + item.file;
+        warning.textContent =
+            "Imagem ausente: " + (item.file || "arquivo não informado");
 
-        this.insertAdjacentElement("afterend", warning);
+        this.replaceWith(warning);
     };
+
+    img.src = getImagePath(item);
 
     return img;
 }
@@ -521,6 +521,7 @@ function visual(q) {
     const box = $("visual");
 
     box.innerHTML = "";
+    box.classList.remove("number-mode");
 
     $("listen").disabled = true;
     $("listen").onclick = null;
@@ -562,22 +563,20 @@ function visual(q) {
 
     else if (q.type === "number") {
 
-        const card = document.createElement("div");
+        box.classList.add("number-mode");
 
-        card.className = "visual-card";
+        const card = document.createElement("div");
+        card.className = "visual-card number-card";
 
         const n = document.createElement("span");
-
-        n.className = "visual-number";
+        n.className = "number-visual";
         n.textContent = String(q.target);
 
         const lab = document.createElement("span");
-
         lab.className = "visual-label";
         lab.textContent = "NÚMERO";
 
         card.append(n, lab);
-
         box.append(card);
 
         const item = numberWord(q.target);
@@ -589,7 +588,6 @@ function visual(q) {
                 audio(item.audio);
             };
         }
-
     }
 
 
