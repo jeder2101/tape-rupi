@@ -102,7 +102,7 @@ const VOCABULARY = [
     { word:"AROI",         meaning:"arroz",          category:"ALIMENTOS", audio:"aroi.mp3",       file:"aroi.png" },
     { word:"AREMÁ",        meaning:"trigo",          category:"ALIMENTOS", audio:"arema.mp3",      file:"arema.png" },
     { word:"AWATI-KU'I",   meaning:"fubá",           category:"ALIMENTOS", audio:"awati-kui.mp3",  file:"awati-kui.png" },
-    { word:"DJATY",        meaning:"batata-doce",    category:"ALIMENTOS", audio:"djaty.mp3",      file:"djaty.png" },
+    { word:"DJETY",        meaning:"batata-doce",    category:"ALIMENTOS", audio:"djety.mp3",      file:"djety.png" },
     { word:"EÍ",           meaning:"mel de abelhas", category:"ALIMENTOS", audio:"ei.mp3",         file:"ei.png" },
     { word:"KANÃ",         meaning:"cana-de-açúcar", category:"ALIMENTOS", audio:"kana.mp3",       file:"kana.png" },
     { word:"KANÃ-KU'I",    meaning:"açúcar",         category:"ALIMENTOS", audio:"kana-kui.mp3",   file:"kana-kui.png" },
